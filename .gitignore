@@ -46,7 +46,7 @@ malicious_phish.csv
 spam.csv
 
 # Trained ML models (regenerate on server or use Git LFS)
-models/*.pkl
+# models/*.pkl
 
 # Local data files (will be created fresh on server)
 # data/lectures.json

@@ -263,7 +263,7 @@ function showToast(message, type = 'info') {
     toast.className = `toast-message ${type}`;
     let icon = 'fa-circle-info';
     if (type === 'success') icon = 'fa-circle-check';
-    if (type === 'danger')  icon = 'fa-triangle-exclamation';
+    if (type === 'danger') icon = 'fa-triangle-exclamation';
     if (type === 'warning') icon = 'fa-circle-exclamation';
     toast.innerHTML = `
         <span class="toast-icon"><i class="fa-solid ${icon}"></i></span>
@@ -309,10 +309,10 @@ function openQuiz(moduleId) {
     _quizCorrectCount = 0;
     _quizMistakes = [];
     const lang = localStorage.getItem('lang') || 'kk';
-    
+
     // Only check dynamic quizzes (no hardcoded fallback)
     let moduleData = dynamicQuizzes[moduleId];
-    
+
     if (!moduleData) return;
 
     // Check if the user has already completed this quiz
@@ -462,7 +462,7 @@ function finishQuiz() {
     document.getElementById('quizResultTitle').textContent = titleText;
     document.getElementById('quizScoreDisplay').textContent = `${correct}/${total} — ${pct}%`;
     document.getElementById('quizResultDesc').textContent = descText;
-    
+
     const mistakesBtn = document.getElementById('quizMistakesBtn');
     if (mistakesBtn) {
         if (_quizMistakes.length > 0) {
@@ -612,51 +612,51 @@ let allLeaderboardData = []; // Global cache for search filtering
 
 async function loadLeaderboard() {
     if (!databaseInstance) return;
-    
+
     const leaderboardBody = document.getElementById('leaderboardBody');
     if (!leaderboardBody) return;
-    
+
     try {
         const snapshot = await databaseInstance.ref('users').once('value');
         const users = snapshot.val() || {};
-        
+
         const lang = localStorage.getItem('lang') || 'kk';
         allLeaderboardData = [];
-        
+
         Object.keys(users).forEach(uid => {
             const u = users[uid];
             const profile = u.profile || {};
             const email = u.email || profile.email || '';
-            
+
             // Exclude admin from leaderboard
             if (email.toLowerCase() === 'zhom05025@gmail.com') return;
-            
+
             const display_name = u.display_name || profile.name || u.name || email || 'Аноним';
             const quizResults = u.quizResults || {};
-            
+
             let completedCount = 0;
             let totalScore = 0;
             let totalPossible = 0;
             const completedTestsList = [];
-            
+
             Object.keys(quizResults).forEach(key => {
                 const r = quizResults[key];
-                
+
                 // Skip legacy module IDs (1, 2, 3, 4)
                 if ([1, 2, 3, 4, '1', '2', '3', '4'].includes(r.moduleId) || ['module_1', 'module_2', 'module_3', 'module_4'].includes(key)) {
                     return;
                 }
-                
+
                 completedCount++;
                 totalScore += r.correct;
                 totalPossible += r.total;
-                
+
                 const targetLec = allFirebaseLectures.find(l => l.key === r.moduleId);
                 let name = (lang === 'kk' ? 'Модуль ' : 'Модуль ') + r.moduleId;
                 if (targetLec) {
                     name = lang === 'ru' ? (targetLec.title_ru || targetLec.title_kk) : (targetLec.title_kk || targetLec.title_ru);
                 }
-                
+
                 let pclass = r.percent >= 80 ? 'score-excellent' : r.percent >= 60 ? 'score-good' : r.percent >= 40 ? 'score-average' : 'score-poor';
                 completedTestsList.push({
                     name: name,
@@ -666,9 +666,9 @@ async function loadLeaderboard() {
                     pclass: pclass
                 });
             });
-            
+
             const avgPct = totalPossible > 0 ? Math.round((totalScore / totalPossible) * 100) : 0;
-            
+
             allLeaderboardData.push({
                 uid: uid,
                 name: display_name,
@@ -680,15 +680,15 @@ async function loadLeaderboard() {
                 completedTestsList: completedTestsList
             });
         });
-        
+
         // Sort students: highest average percentage first, then by total score
         allLeaderboardData.sort((a, b) => {
             if (b.avgPct !== a.avgPct) return b.avgPct - a.avgPct;
             return b.totalScore - a.totalScore;
         });
-        
+
         renderLeaderboardRows(allLeaderboardData);
-        
+
     } catch (e) {
         console.error("Error loading leaderboard:", e);
         leaderboardBody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--color-danger); padding:2rem;">Деректерді жүктеу қатесі / Ошибка загрузки данных</td></tr>`;
@@ -698,29 +698,29 @@ async function loadLeaderboard() {
 function renderLeaderboardRows(data) {
     const leaderboardBody = document.getElementById('leaderboardBody');
     if (!leaderboardBody) return;
-    
+
     const lang = localStorage.getItem('lang') || 'kk';
-    
+
     if (data.length === 0) {
         leaderboardBody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--text-secondary); padding:2rem;" data-i18n="leaderboard_no_data">${translations[lang].leaderboard_no_data}</td></tr>`;
         return;
     }
-    
+
     leaderboardBody.innerHTML = data.map((student, idx) => {
         const rank = idx + 1;
         let rankClass = '';
         let medal = '';
-        
+
         if (rank === 1) { rankClass = 'rank-gold'; medal = '🥇 '; }
         else if (rank === 2) { rankClass = 'rank-silver'; medal = '🥈 '; }
         else if (rank === 3) { rankClass = 'rank-bronze'; medal = '🥉 '; }
-        
+
         const testsHtml = student.completedTestsList.length > 0
-            ? `<div class="leaderboard-tests-list">${student.completedTestsList.map(t => 
+            ? `<div class="leaderboard-tests-list">${student.completedTestsList.map(t =>
                 `<span class="leaderboard-test-pill ${t.pclass}">${t.name}: ${t.percent}%</span>`
-              ).join('')}</div>`
+            ).join('')}</div>`
             : `<span class="leaderboard-no-tests" data-i18n="leaderboard_no_tests">${translations[lang].leaderboard_no_tests}</span>`;
-            
+
         return `
             <tr>
                 <td class="leaderboard-rank-cell ${rankClass}" style="padding: 1rem;">${medal}${rank}</td>
@@ -741,12 +741,12 @@ function filterLeaderboard() {
         renderLeaderboardRows(allLeaderboardData);
         return;
     }
-    
-    const filtered = allLeaderboardData.filter(student => 
-        student.name.toLowerCase().includes(query) || 
+
+    const filtered = allLeaderboardData.filter(student =>
+        student.name.toLowerCase().includes(query) ||
         student.email.toLowerCase().includes(query)
     );
-    
+
     renderLeaderboardRows(filtered);
 }
 
@@ -800,8 +800,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // Sidebar layout: langToggle is a div with two child spans: #langKKBtn and #langRUBtn
     // Guest layout: langToggle is a button whose textContent is set to "KK" or "RU"
     const langToggle = document.getElementById('langToggle');
-    const langKKBtn  = document.getElementById('langKKBtn');
-    const langRUBtn  = document.getElementById('langRUBtn');
+    const langKKBtn = document.getElementById('langKKBtn');
+    const langRUBtn = document.getElementById('langRUBtn');
 
     const applyLanguage = (lang) => {
         localStorage.setItem('lang', lang);
@@ -982,7 +982,7 @@ document.addEventListener('DOMContentLoaded', () => {
             } catch (err) {
                 if (loader) loader.classList.remove('active');
                 let msg = err.message;
-                if (['auth/user-not-found','auth/wrong-password','auth/invalid-credential'].includes(err.code)) {
+                if (['auth/user-not-found', 'auth/wrong-password', 'auth/invalid-credential'].includes(err.code)) {
                     msg = lang === 'kk' ? 'Қате email немесе құпия сөз!' : 'Неверный email или пароль!';
                 } else if (err.code === 'auth/invalid-email') {
                     msg = translations[lang].toast_err_invalid_email;
@@ -1018,8 +1018,8 @@ const lecturesData = {
 };
 
 let allFirebaseLectures = [];
-let allFirebaseVideos   = [];
-let dynamicQuizzes      = {};
+let allFirebaseVideos = [];
+let dynamicQuizzes = {};
 
 // ─── LECTURE LOADING & RENDERING ──────────────────────────────────────────
 
@@ -1034,16 +1034,16 @@ async function loadAndRenderLectures() {
         ]);
         const dataLec = await resLec.json();
         const dataQuiz = await resQuiz.json();
-        
+
         allFirebaseLectures = Array.isArray(dataLec) ? dataLec : [];
         dynamicQuizzes = dataQuiz || {};
-    } catch(e) {
+    } catch (e) {
         allFirebaseLectures = [];
         dynamicQuizzes = {};
     }
 
     renderLectureList();
-    
+
     // AFTER rendering lectures, load user results to update status badges
     if (typeof currentUserUID !== 'undefined' && currentUserUID) {
         loadUserResults(currentUserUID);
@@ -1051,9 +1051,9 @@ async function loadAndRenderLectures() {
 }
 
 function renderLectureList() {
-    const listEl  = document.getElementById('lectureList');
+    const listEl = document.getElementById('lectureList');
     if (!listEl) return;
-    const lang    = localStorage.getItem('lang') || 'kk';
+    const lang = localStorage.getItem('lang') || 'kk';
     const isAdmin = typeof IS_ADMIN !== 'undefined' && IS_ADMIN;
 
     if (allFirebaseLectures.length === 0) {
@@ -1065,7 +1065,7 @@ function renderLectureList() {
     }
 
     listEl.innerHTML = allFirebaseLectures.map((lec, idx) => {
-        const title  = lang === 'ru' ? (lec.title_ru || lec.title_kk) : (lec.title_kk || lec.title_ru);
+        const title = lang === 'ru' ? (lec.title_ru || lec.title_kk) : (lec.title_kk || lec.title_ru);
         const delBtn = isAdmin
             ? `<button onclick="adminDeleteLecture(event,'${lec.key}')"
                 style="background:none;border:none;cursor:pointer;color:#c62828;font-size:1rem;padding:0.3rem 0.5rem;border-radius:6px;transition:background 0.2s;"
@@ -1091,14 +1091,14 @@ function renderLectureList() {
 
 function openFirebaseLectureModal(key) {
     const lang = localStorage.getItem('lang') || 'kk';
-    const lec  = allFirebaseLectures.find(l => l.key === key);
+    const lec = allFirebaseLectures.find(l => l.key === key);
     if (!lec) return;
 
     const title = lang === 'ru' ? (lec.title_ru || lec.title_kk) : (lec.title_kk || lec.title_ru);
-    const body  = lang === 'ru' ? (lec.body_ru  || lec.body_kk)  : (lec.body_kk  || lec.body_ru);
+    const body = lang === 'ru' ? (lec.body_ru || lec.body_kk) : (lec.body_kk || lec.body_ru);
 
     document.getElementById('topicModalTitle').textContent = title;
-    document.getElementById('topicModalBody').innerHTML    = body
+    document.getElementById('topicModalBody').innerHTML = body
         ? body
         : '<em style="color:#94a3b8;">Мазмұн қосылмаған</em>';
 
@@ -1112,11 +1112,11 @@ function openFirebaseLectureModal(key) {
                 : 'Бұл лекция үшін тест әлі қосылмаған', 'warning');
         }
     };
-    
+
     // Hide or show the button based on whether a quiz exists and if it's already taken
     const btn = document.getElementById('topicStartQuizBtn');
     const isCompleted = userQuizResults && (userQuizResults[`module_${key}`] || userQuizResults[key]);
-    
+
     if (dynamicQuizzes[key]) {
         btn.style.display = 'inline-flex';
         if (isCompleted) {
@@ -1160,16 +1160,16 @@ function closeAddLectureModal(e) {
     if (!overlay) return;
     if (e && e.target !== overlay) return;
     overlay.classList.remove('active');
-    ['newLecTitleKK','newLecBodyKK'].forEach(id => {
+    ['newLecTitleKK', 'newLecBodyKK'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.value = '';
     });
 }
 
 async function adminSaveLecture() {
-    const btn     = document.getElementById('saveLecBtn');
+    const btn = document.getElementById('saveLecBtn');
     const titleKK = document.getElementById('newLecTitleKK').value.trim();
-    const bodyKK  = document.getElementById('newLecBodyKK').value.trim();
+    const bodyKK = document.getElementById('newLecBodyKK').value.trim();
 
     if (!titleKK) { showToast('Тақырып атауы міндетті!', 'danger'); return; }
 
@@ -1177,7 +1177,7 @@ async function adminSaveLecture() {
     btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Сақталуда...';
 
     try {
-        const res  = await fetch('/api/admin/add-lecture', {
+        const res = await fetch('/api/admin/add-lecture', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ title_kk: titleKK, body_kk: bodyKK })
@@ -1194,7 +1194,7 @@ async function adminSaveLecture() {
                         body: JSON.stringify({ lecture_key: json.key, lecture_text: bodyKK })
                     });
                     const aiJson = await aiRes.json();
-                    if(aiJson.success) {
+                    if (aiJson.success) {
                         showToast('Лекция мен Тест сәтті қосылды! ✓', 'success');
                     } else {
                         showToast('Лекция қосылды, бірақ Тест қатесі: ' + aiJson.message, 'warning');
@@ -1210,7 +1210,7 @@ async function adminSaveLecture() {
         } else {
             showToast(json.message || 'Қате!', 'danger');
         }
-    } catch(e) {
+    } catch (e) {
         showToast('Желі қатесі!', 'danger');
     } finally {
         btn.disabled = false;
@@ -1221,11 +1221,11 @@ async function adminSaveLecture() {
 async function adminDeleteLecture(e, key) {
     e.stopPropagation();
     const lang = localStorage.getItem('lang') || 'kk';
-    const msg  = lang === 'ru' ? 'Удалить эту лекцию?' : 'Бұл лекцияны жоюға сенімдісіз бе?';
+    const msg = lang === 'ru' ? 'Удалить эту лекцию?' : 'Бұл лекцияны жоюға сенімдісіз бе?';
     if (!confirm(msg)) return;
 
     try {
-        const res  = await fetch('/api/admin/delete-lecture/' + key, { method: 'DELETE' });
+        const res = await fetch('/api/admin/delete-lecture/' + key, { method: 'DELETE' });
         const json = await res.json();
         if (json.success) {
             showToast(lang === 'ru' ? 'Лекция удалена' : 'Лекция жойылды', 'success');
@@ -1233,7 +1233,7 @@ async function adminDeleteLecture(e, key) {
         } else {
             showToast(json.message || 'Қате!', 'danger');
         }
-    } catch(e) {
+    } catch (e) {
         showToast('Желі қатесі!', 'danger');
     }
 }
@@ -1245,10 +1245,10 @@ async function loadAndRenderVideos() {
     if (!container) return;
 
     try {
-        const res  = await fetch('/api/get-all-videos');
+        const res = await fetch('/api/get-all-videos');
         const data = await res.json();
         allFirebaseVideos = Array.isArray(data) ? data : [];
-    } catch(e) {
+    } catch (e) {
         allFirebaseVideos = [];
     }
 
@@ -1316,20 +1316,20 @@ function closeAddVideoModal(e) {
     if (!overlay) return;
     if (e && e.target !== overlay) return;
     overlay.classList.remove('active');
-    ['newVidTitle','newVidCategory','newVidUrl'].forEach(id => {
+    ['newVidTitle', 'newVidCategory', 'newVidUrl'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.value = '';
     });
 }
 
 async function adminSaveVideo() {
-    const btn      = document.getElementById('saveVidBtn');
-    const title    = document.getElementById('newVidTitle').value.trim();
+    const btn = document.getElementById('saveVidBtn');
+    const title = document.getElementById('newVidTitle').value.trim();
     const category = document.getElementById('newVidCategory').value.trim();
-    const url      = document.getElementById('newVidUrl').value.trim();
+    const url = document.getElementById('newVidUrl').value.trim();
 
     if (!title) { showToast('Видео атауы міндетті!', 'danger'); return; }
-    if (!url)   { showToast('YouTube сілтемесі міндетті!', 'danger'); return; }
+    if (!url) { showToast('YouTube сілтемесі міндетті!', 'danger'); return; }
     if (!url.includes('youtube.com') && !url.includes('youtu.be')) {
         showToast('Тек YouTube сілтемелері рұқсат етілген!', 'warning'); return;
     }
@@ -1338,7 +1338,7 @@ async function adminSaveVideo() {
     btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Сақталуда...';
 
     try {
-        const res  = await fetch('/api/admin/add-video', {
+        const res = await fetch('/api/admin/add-video', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ title, category, url })
@@ -1351,7 +1351,7 @@ async function adminSaveVideo() {
         } else {
             showToast(json.message || 'Қате!', 'danger');
         }
-    } catch(e) {
+    } catch (e) {
         showToast('Желі қатесі!', 'danger');
     } finally {
         btn.disabled = false;
@@ -1362,11 +1362,11 @@ async function adminSaveVideo() {
 async function adminDeleteVideo(e, key) {
     e.stopPropagation();
     const lang = localStorage.getItem('lang') || 'kk';
-    const msg  = lang === 'ru' ? 'Удалить это видео?' : 'Бұл видеоны жоюға сенімдісіз бе?';
+    const msg = lang === 'ru' ? 'Удалить это видео?' : 'Бұл видеоны жоюға сенімдісіз бе?';
     if (!confirm(msg)) return;
 
     try {
-        const res  = await fetch('/api/admin/delete-video/' + key, { method: 'DELETE' });
+        const res = await fetch('/api/admin/delete-video/' + key, { method: 'DELETE' });
         const json = await res.json();
         if (json.success) {
             showToast(lang === 'ru' ? 'Видео удалено' : 'Видео жойылды', 'success');
@@ -1374,7 +1374,7 @@ async function adminDeleteVideo(e, key) {
         } else {
             showToast(json.message || 'Қате!', 'danger');
         }
-    } catch(e) {
+    } catch (e) {
         showToast('Желі қатесі!', 'danger');
     }
 }
@@ -1399,16 +1399,16 @@ function closeAdminFeedbackModal(e) {
 async function loadAndRenderFeedback() {
     const listEl = document.getElementById('adminFeedbackList');
     if (!listEl) return;
-    
+
     listEl.innerHTML = `<div style="text-align:center; padding:2rem; color:#667766;">
         <i class="fa-solid fa-spinner fa-spin" style="font-size:1.5rem;"></i>
         <p style="margin-top:0.75rem;">Жүктелуде...</p>
     </div>`;
-    
+
     try {
         const res = await fetch('/api/admin/get-feedback');
         const data = await res.json();
-        
+
         if (!Array.isArray(data) || data.length === 0) {
             listEl.innerHTML = `<div style="text-align:center; padding:2rem; color:#94a3b8;">
                 <i class="fa-solid fa-box-open" style="font-size:2rem;opacity:0.4;"></i>
@@ -1416,14 +1416,14 @@ async function loadAndRenderFeedback() {
             </div>`;
             return;
         }
-        
+
         // Sort by timestamp descending
         data.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
-        
+
         listEl.innerHTML = data.map((fb, idx) => {
             const date = fb.timestamp ? new Date(fb.timestamp * 1000).toLocaleString('kk-KZ') : 'Белгісіз уақыт';
             const ratingStars = '★'.repeat(fb.rating || 5) + '☆'.repeat(5 - (fb.rating || 5));
-            
+
             return `
             <div style="background: #f8faf8; border: 1px solid #e0e6e0; border-radius: 12px; padding: 1.25rem; position: relative;">
                 <button onclick="adminDeleteFeedback(event, '${fb.key}')" 
@@ -1442,7 +1442,7 @@ async function loadAndRenderFeedback() {
                 <div style="font-size: 0.95rem; color: #334155; line-height: 1.5; white-space: pre-wrap; background: #fff; padding: 1rem; border-radius: 8px; border: 1px solid #e2e8f0;">${fb.message || ''}</div>
             </div>`;
         }).join('');
-    } catch(e) {
+    } catch (e) {
         listEl.innerHTML = `<div style="text-align:center; color:#c62828; padding: 1rem;">Желілік қателік орын алды.</div>`;
     }
 }
@@ -1450,7 +1450,7 @@ async function loadAndRenderFeedback() {
 async function adminDeleteFeedback(e, key) {
     e.stopPropagation();
     if (!confirm('Бұл шағымды жоюға сенімдісіз бе?')) return;
-    
+
     try {
         const res = await fetch('/api/admin/delete-feedback/' + key, { method: 'DELETE' });
         const json = await res.json();
@@ -1460,14 +1460,14 @@ async function adminDeleteFeedback(e, key) {
         } else {
             showToast(json.message || 'Қате!', 'danger');
         }
-    } catch(e) {
+    } catch (e) {
         showToast('Желі қатесі!', 'danger');
     }
 }
 
 // ─── BOOT: Auto-load on page ─────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
-    if (document.getElementById('lectureList'))      loadAndRenderLectures();
+    if (document.getElementById('lectureList')) loadAndRenderLectures();
     if (document.getElementById('videoListContainer')) loadAndRenderVideos();
 });
 
@@ -1499,11 +1499,11 @@ function openProfileModal() {
     if (!overlay) return;
     // Clear inputs
     const old = document.getElementById('profileOldPass');
-    const nw  = document.getElementById('profileNewPass');
-    const cf  = document.getElementById('profileConfirmPass');
+    const nw = document.getElementById('profileNewPass');
+    const cf = document.getElementById('profileConfirmPass');
     if (old) old.value = '';
-    if (nw)  nw.value  = '';
-    if (cf)  cf.value  = '';
+    if (nw) nw.value = '';
+    if (cf) cf.value = '';
     overlay.classList.add('active');
     document.getElementById('profileDropdown')?.classList.remove('open');
 }
@@ -1519,8 +1519,8 @@ function closeProfileModal(event) {
 // PROFILE: CHANGE PASSWORD
 // =============================================
 async function changePassword() {
-    const oldPass  = document.getElementById('profileOldPass')?.value.trim();
-    const newPass  = document.getElementById('profileNewPass')?.value.trim();
+    const oldPass = document.getElementById('profileOldPass')?.value.trim();
+    const newPass = document.getElementById('profileNewPass')?.value.trim();
     const confPass = document.getElementById('profileConfirmPass')?.value.trim();
 
     if (!oldPass || !newPass || !confPass) {
@@ -1593,7 +1593,7 @@ function resizeAndEncodeImage(file, maxSize = 256) {
                 let w = img.width, h = img.height;
                 if (w > maxSize || h > maxSize) {
                     if (w > h) { h = Math.round(h * maxSize / w); w = maxSize; }
-                    else       { w = Math.round(w * maxSize / h); h = maxSize; }
+                    else { w = Math.round(w * maxSize / h); h = maxSize; }
                 }
                 canvas.width = w;
                 canvas.height = h;
