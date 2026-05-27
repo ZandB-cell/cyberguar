@@ -106,14 +106,7 @@
         color: #2e7d32 !important;
     }
 
-    /* Dark Mode specific overrides for the landing page background image */
-    [data-theme="dark"] body {
-        background-image: url("/static/img/bg.png") !important;
-        background-size: cover !important;
-        background-position: center top !important;
-        background-repeat: no-repeat !important;
-        background-attachment: fixed !important;
-    }
+
 
     /* Mobile Responsive Overrides to prevent overlap and optimize background */
     @media (max-width: 768px) {
@@ -158,9 +151,7 @@
         .hero-shield-center {
             font-size: 3.5rem !important;
         }
-        [data-theme="dark"] body {
-            background-position: 65% top !important; /* Shift slightly on mobile to center the glowing shield background */
-        }
+
         .stats-grid {
             grid-template-columns: 1fr 1fr !important; /* 2x2 grid for stats on mobile */
             gap: 1rem !important;
