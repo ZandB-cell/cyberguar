@@ -191,11 +191,14 @@
                         <th style="padding: 1.2rem 1rem; color: #1b5e20;" data-i18n="leaderboard_tests">Тапсырылған тесттер</th>
                         <th style="padding: 1.2rem 1rem; color: #1b5e20;" data-i18n="leaderboard_total_score">Жалпы ұпай</th>
                         <th style="padding: 1.2rem 1rem; color: #1b5e20;" data-i18n="leaderboard_avg_score">Орташа нәтиже</th>
+                        {% if is_admin %}
+                        <th style="padding: 1.2rem 1rem; color: #1b5e20;">Әрекет</th>
+                        {% endif %}
                     </tr>
                 </thead>
                 <tbody id="leaderboardBody">
                     <tr>
-                        <td colspan="5" style="padding: 2.5rem; text-align: center; color: var(--text-secondary);" data-i18n="loading_text">Жүктелуде...</td>
+                        <td colspan="{{ '6' if is_admin else '5' }}" style="padding: 2.5rem; text-align: center; color: var(--text-secondary);" data-i18n="loading_text">Жүктелуде...</td>
                     </tr>
                 </tbody>
             </table>

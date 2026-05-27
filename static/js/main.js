@@ -700,9 +700,10 @@ function renderLeaderboardRows(data) {
     if (!leaderboardBody) return;
 
     const lang = localStorage.getItem('lang') || 'kk';
+    const isAdmin = typeof IS_ADMIN !== 'undefined' && IS_ADMIN;
 
     if (data.length === 0) {
-        leaderboardBody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--text-secondary); padding:2rem;" data-i18n="leaderboard_no_data">${translations[lang].leaderboard_no_data}</td></tr>`;
+        leaderboardBody.innerHTML = `<tr><td colspan="${isAdmin ? 6 : 5}" style="text-align:center; color:var(--text-secondary); padding:2rem;" data-i18n="leaderboard_no_data">${translations[lang].leaderboard_no_data}</td></tr>`;
         return;
     }
 
@@ -721,6 +722,17 @@ function renderLeaderboardRows(data) {
             ).join('')}</div>`
             : `<span class="leaderboard-no-tests" data-i18n="leaderboard_no_tests">${translations[lang].leaderboard_no_tests}</span>`;
 
+        const actionCell = isAdmin
+            ? `<td style="padding: 1rem;">
+                <button onclick="adminDeleteStudent(event, '${student.uid}', '${student.name.replace(/'/g, "\\'")}')"
+                    style="background:#ffebee; border:none; border-radius:6px; color:#c62828; cursor:pointer; font-weight:700; padding:0.4rem 0.8rem; font-size:0.85rem; display:inline-flex; align-items:center; gap:0.3rem; transition:background 0.2s;"
+                    onmouseenter="this.style.background='#ffcdd2'"
+                    onmouseleave="this.style.background='#ffebee'">
+                    <i class="fa-solid fa-user-minus"></i> Өшіру
+                </button>
+               </td>`
+            : '';
+
         return `
             <tr>
                 <td class="leaderboard-rank-cell ${rankClass}" style="padding: 1rem;">${medal}${rank}</td>
@@ -730,9 +742,31 @@ function renderLeaderboardRows(data) {
                 <td style="padding: 1rem;">${testsHtml}</td>
                 <td class="leaderboard-total-score-val" style="padding: 1rem;">${student.totalScore}/${student.totalPossible}</td>
                 <td class="leaderboard-avg-pct" style="padding: 1rem;">${student.avgPct}%</td>
+                ${actionCell}
             </tr>
         `;
     }).join('');
+}
+
+async function adminDeleteStudent(event, uid, name) {
+    event.stopPropagation();
+    const lang = localStorage.getItem('lang') || 'kk';
+    const msg = lang === 'ru'
+        ? `Вы действительно хотите удалить студента ${name} из рейтинга и базы данных?`
+        : `Шынымен студент ${name}-ді рейтинг пен базадан өшіргіңіз келе ме?`;
+
+    if (!confirm(msg)) return;
+
+    try {
+        if (databaseInstance) {
+            await databaseInstance.ref(`users/${uid}`).remove();
+            showToast(lang === 'ru' ? 'Студент удален' : 'Студент сәтті өшірілді', 'success');
+            await loadLeaderboard(); // Refresh leaderboard
+        }
+    } catch (e) {
+        console.error("Error deleting student:", e);
+        showToast(lang === 'ru' ? 'Ошибка при удалении' : 'Өшіру кезінде қате орын алды', 'danger');
+    }
 }
 
 function filterLeaderboard() {
