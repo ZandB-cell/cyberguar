@@ -5,103 +5,104 @@
 {% block content %}
 <!-- OVERRIDE DEFAULT STYLES TO MATCH STUDENT PAGE COLORS -->
 <style>
-    body, html {
+    /* Default (Dark mode) uses style.css which is gorgeous. We only override for Light Mode to match student colors */
+    [data-theme="light"] body, [data-theme="light"] html {
         background: #f9faf9 !important;
         color: #1c281c !important;
     }
-    .hero-section {
+    [data-theme="light"] .hero-section {
         background: transparent;
     }
-    .hero-title, .section-title {
+    [data-theme="light"] .hero-title, [data-theme="light"] .section-title {
         color: #1c281c !important;
     }
-    .hero-desc, .info-p, .section-subtitle {
+    [data-theme="light"] .hero-desc, [data-theme="light"] .info-p, [data-theme="light"] .section-subtitle {
         color: #4f5f4f !important;
     }
-    .hero-glow-blob {
+    [data-theme="light"] .hero-glow-blob {
         display: none !important;
     }
-    .navbar {
+    [data-theme="light"] .navbar {
         background: #ffffff !important;
         border-bottom: 1px solid #e0e6e0 !important;
     }
-    .navbar-logo, .navbar-logo span, .navbar-logo i {
+    [data-theme="light"] .navbar-logo, [data-theme="light"] .navbar-logo span, [data-theme="light"] .navbar-logo i {
         color: #2e7d32 !important;
         text-shadow: none !important;
         filter: none !important;
     }
-    .nav-btn-outline {
+    [data-theme="light"] .nav-btn-outline {
         border: 1px solid #2e7d32 !important;
         color: #2e7d32 !important;
     }
-    .nav-btn-outline:hover {
+    [data-theme="light"] .nav-btn-outline:hover {
         background: #2e7d32 !important;
         color: #ffffff !important;
     }
-    .nav-btn-primary, .hero-btn.nav-btn-primary {
+    [data-theme="light"] .nav-btn-primary, [data-theme="light"] .hero-btn.nav-btn-primary {
         background: #2e7d32 !important;
         color: #ffffff !important;
         box-shadow: none !important;
     }
-    .stat-card, .feature-card, .tip-item {
+    [data-theme="light"] .stat-card, [data-theme="light"] .feature-card, [data-theme="light"] .tip-item {
         background: #ffffff !important;
         border: 1px solid #e0e6e0 !important;
         box-shadow: 0 2px 12px rgba(0,0,0,0.02) !important;
     }
-    .stat-card:hover, .feature-card:hover, .tip-item:hover {
+    [data-theme="light"] .stat-card:hover, [data-theme="light"] .feature-card:hover, [data-theme="light"] .tip-item:hover {
         border-color: #2e7d32 !important;
         transform: translateY(-5px);
     }
-    .stat-number, .card-icon {
+    [data-theme="light"] .stat-number, [data-theme="light"] .card-icon {
         color: #2e7d32 !important;
         text-shadow: none !important;
     }
-    .stat-title, .card-desc, .tip-p {
+    [data-theme="light"] .stat-title, [data-theme="light"] .card-desc, [data-theme="light"] .tip-p {
         color: #4f5f4f !important;
     }
-    .card-title, .tip-h4 {
+    [data-theme="light"] .card-title, [data-theme="light"] .tip-h4 {
         color: #1c281c !important;
     }
-    .section-title span, .info-img-container i {
+    [data-theme="light"] .section-title span, [data-theme="light"] .info-img-container i {
         color: #2e7d32 !important;
         text-shadow: none !important;
     }
-    .tip-number {
+    [data-theme="light"] .tip-number {
         background: #2e7d32 !important;
         color: #ffffff !important;
     }
-    .hero-shield-center i {
+    [data-theme="light"] .hero-shield-center i {
         color: #2e7d32 !important;
         filter: drop-shadow(0 0 10px rgba(46,125,50,0.2)) !important;
     }
-    .footer {
+    [data-theme="light"] .footer {
         background: #ffffff !important;
         border-top: 1px solid #e0e6e0 !important;
         color: #4f5f4f !important;
     }
-    .footer-desc, .footer-link {
+    [data-theme="light"] .footer-desc, [data-theme="light"] .footer-link {
         color: #4f5f4f !important;
     }
-    .footer-h4 {
+    [data-theme="light"] .footer-h4 {
         color: #1c281c !important;
     }
-    .footer-link:hover {
+    [data-theme="light"] .footer-link:hover {
         color: #2e7d32 !important;
     }
-    .footer-bottom {
+    [data-theme="light"] .footer-bottom {
         border-top: 1px solid #e0e6e0 !important;
         color: #667766 !important;
     }
-    .control-btn {
+    [data-theme="light"] .control-btn {
         color: #4f5f4f !important;
     }
-    .hero-badge {
+    [data-theme="light"] .hero-badge {
         background: #e8f5e9 !important;
         color: #2e7d32 !important;
         border: 1px solid #c8e6c9 !important;
         box-shadow: none !important;
     }
-    .hero-badge i {
+    [data-theme="light"] .hero-badge i {
         color: #2e7d32 !important;
     }
 </style>
