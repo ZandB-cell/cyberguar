@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+{% block content %}
+<div style="background-color: #ffffff; border-radius: 16px; border: 1px solid #e0e6e0; padding: 2rem; box-shadow: 0 2px 12px rgba(0,0,0,0.02);">
+    <!-- Header -->
+    <div style="margin-bottom: 2rem; border-bottom: 1px solid #e0e6e0; padding-bottom: 1rem;">
+        <h2 style="color: #1c281c; font-weight: 800; font-size: 1.6rem; margin-top: 0; margin-bottom: 0.5rem;" data-i18n="mistakes_title">Қателерді талдау</h2>
+        <p style="color: #2e7d32; font-weight: 600; font-size: 0.95rem; margin: 0;" data-i18n="mistakes_subtitle">Тест нәтижелері бойынша қате жауаптарға арналған егжей-тегжейлі талдау</p>
+    </div>
+
+    <!-- Summary Box -->
+    <div id="mistakesSummary" style="margin-bottom: 1.5rem; padding: 1rem 1.25rem; background-color: #f4f6f4; border: 1px solid #e0e6e0; border-radius: 10px; font-weight: 700; color: #1b5e20; font-size: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+        <i class="fa-solid fa-circle-info"></i>
+        <span id="mistakesSummaryText">Күтіңіз...</span>
+    </div>
+
+    <!-- Grid Container -->
+    <div id="mistakesContainer" class="cards-grid three-column" style="gap: 1.5rem; display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));">
+        <div style="grid-column: 1/-1; text-align: center; color: var(--text-secondary); padding: 3rem;" data-i18n="loading_text">Жүктелуде...</div>
+    </div>
+</div>
+
+<script>
+    (function() {
+        const raw = sessionStorage.getItem('lastMistakes');
+        const summaryText = document.getElementById('mistakesSummaryText');
+        const container = document.getElementById('mistakesContainer');
+        const lang = localStorage.getItem('lang') || 'kk';
+
+        if (!raw) {
+            if (summaryText) summaryText.textContent = lang === 'kk' ? 'Қателер туралы мәліметтер табылмады.' : 'Данные о ошибках не найдены.';
+            if (container) container.innerHTML = `<div style="grid-column:1/-1; padding:2rem; text-align:center; color:var(--text-secondary);">${lang === 'kk' ? 'Тесттерді тапсырып, қателеріңізді осында талдаңыз.' : 'Пройдите тесты, чтобы разобрать свои ошибки здесь.'}</div>`;
+            return;
+        }
+
+        const data = JSON.parse(raw);
+        const mistakes = data.mistakes || [];
+        const total = data.total || 0;
+        const correct = data.correctCount || data.correctCount === 0 ? data.correctCount : (total - mistakes.length);
+
+        if (summaryText) {
+            summaryText.innerHTML = lang === 'kk' 
+                ? `Нәтиже: <strong>${correct}/${total}</strong> — Жіберілген қателер саны: <strong>${mistakes.length}</strong>`
+                : `Результат: <strong>${correct}/${total}</strong> — Количество сделанных ошибок: <strong>${mistakes.length}</strong>`;
+        }
+
+        if (!container) return;
+
+        if (mistakes.length === 0) {
+            container.innerHTML = `
+                <div style="grid-column: 1/-1; padding: 2.5rem; text-align: center; background: #e8f5e9; border: 1px solid #c8e6c9; border-radius: 12px; color: #2e7d32; font-weight: 700; font-size: 1.1rem; display: flex; flex-direction: column; align-items: center; gap: 0.75rem;">
+                    <i class="fa-solid fa-circle-check" style="font-size: 3rem; color: #2e7d32;"></i>
+                    <span>${lang === 'kk' ? 'Барлық сұрақтарға дұрыс жауап берілді. Құттықтаймыз!' : 'Все ответы верны. Поздравляем!'}</span>
+                </div>
+            `;
+            return;
+        }
+
+        container.innerHTML = mistakes.map(m => `
+            <div class="cg-mistake-card">
+                <!-- Question Header -->
+                <div style="display: flex; gap: 0.75rem; align-items: flex-start; border-bottom: 1px solid #e0e6e0; padding-bottom: 0.75rem;">
+                    <i class="fa-solid fa-circle-question" style="color: #2e7d32; font-size: 1.25rem; margin-top: 0.15rem;"></i>
+                    <h4 class="cg-mistake-title" style="margin: 0; font-size: 1.05rem; line-height: 1.4; color: #1c281c !important;">${m.question}</h4>
+                </div>
+
+                <!-- Answer Boxes -->
+                <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                    <div class="cg-wrong-ans-box" style="display: flex; align-items: center; gap: 0.5rem;">
+                        <i class="fa-solid fa-circle-xmark" style="color: #c62828; font-size: 1rem;"></i>
+                        <span><strong>${lang === 'kk' ? 'Сіздің жауабыңыз:' : 'Ваш ответ:'}</strong> ${m.selected}</span>
+                    </div>
+                    <div class="cg-correct-ans-box" style="display: flex; align-items: center; gap: 0.5rem;">
+                        <i class="fa-solid fa-circle-check" style="color: #2e7d32; font-size: 1rem;"></i>
+                        <span><strong>${lang === 'kk' ? 'Дұрыс жауап:' : 'Правильный ответ:'}</strong> ${m.correct}</span>
+                    </div>
+                </div>
+
+                <!-- Analysis Bullet List with Icons -->
+                <div style="display: flex; flex-direction: column; gap: 0.85rem; border-top: 1px solid #e0e6e0; padding-top: 0.85rem;">
+                    
+                    <div style="display: flex; gap: 0.5rem; align-items: flex-start;">
+                        <i class="fa-solid fa-triangle-exclamation" style="color: #ef5350; font-size: 0.9rem; margin-top: 0.2rem;"></i>
+                        <div>
+                            <strong style="color: #1b5e20; font-size: 0.85rem;">${lang === 'kk' ? 'Түсіндірме (Неліктен қате):' : 'Объяснение (Почему ошибка):'}</strong>
+                            <ul style="margin: 0.15rem 0 0 1rem; padding: 0; list-style-type: disc; color: #4f5f4f; font-size: 0.85rem; line-height: 1.4;">
+                                <li>${m.explanation}</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; gap: 0.5rem; align-items: flex-start;">
+                        <i class="fa-solid fa-lightbulb" style="color: #4caf50; font-size: 0.9rem; margin-top: 0.2rem;"></i>
+                        <div>
+                            <strong style="color: #1b5e20; font-size: 0.85rem;">${lang === 'kk' ? 'Қалай ойлау керек:' : 'Как нужно думать:'}</strong>
+                            <ul style="margin: 0.15rem 0 0 1rem; padding: 0; list-style-type: disc; color: #4f5f4f; font-size: 0.85rem; line-height: 1.4;">
+                                <li>${lang === 'kk' ? 'Сұрақты бірнеше сегментке бөліп қарастырып, ұсынылған нұсқалардың әрқайсысының логикалық дұрыстығын талдау қажет.' : 'Разделите вопрос на несколько частей и проанализируйте логическую верность каждого варианта.'}</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; gap: 0.5rem; align-items: flex-start;">
+                        <i class="fa-solid fa-circle-info" style="color: #0d47a1; font-size: 0.9rem; margin-top: 0.2rem;"></i>
+                        <div>
+                            <strong style="color: #1b5e20; font-size: 0.85rem;">${lang === 'kk' ? 'Дұрыс шешу тәсілі:' : 'Правильный способ решения:'}</strong>
+                            <ul style="margin: 0.15rem 0 0 1rem; padding: 0; list-style-type: disc; color: #4f5f4f; font-size: 0.85rem; line-height: 1.4;">
+                                <li>${lang === 'kk' ? 'Берілген анықтамаларды немесе контексті мұқият салыстырып, ең дұрыс және негізделген жауап нұсқасын таңдаңыз.' : 'Тщательно сопоставьте предоставленные определения или контекст и выберите наиболее обоснованный вариант.'}</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        `).join('');
+    })();
+</script>
+{% endblock %}
+

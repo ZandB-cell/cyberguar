@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="kk" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}CyberGuard - Киберқауіпсіздік Порталы{% endblock %}</title>
+    
+    <!-- Meta tags for SEO -->
+    <meta name="description" content="CyberGuard - заманауи киберқауіпсіздік білім беру және ақпараттық платформасы. Киберқауіпсіздік негіздерін бізбен бірге үйреніңіз.">
+    <meta name="keywords" content="cybersecurity, киберқауіпсіздік, кибербезопасность, хакер, фишинг, қорғаныс, IT, Flask, Firebase">
+    <meta name="author" content="CyberGuard Team">
+
+    {% set raw_name = session.get('display_name', session.get('user', '')) %}
+    {% set display_name = raw_name.split('@')[0] if '@' in raw_name else raw_name %}
+    
+    <!-- FontAwesome for Premium Cybersecurity Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Main Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <!-- Toast Notifications Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Loading Spinner Overlay -->
+    <div class="loader-overlay" id="loaderOverlay">
+        <div class="loader-spinner"></div>
+        <div class="loader-text" id="loaderText" data-i18n="loading_text">Жүктелуде...</div>
+    </div>
+
+    {% if session.get('user') %}
+    <!-- DUAL LAYOUT: LOGGED-IN SESSION WITH LEFT SIDEBAR -->
+    <div class="cyberguard-layout">
+        <!-- FIXED LEFT SIDEBAR -->
+        <aside class="cyberguard-sidebar">
+            <div class="sidebar-logo">
+                <a href="{{ url_for('lectures') }}">
+                    Cyber<span>Guard</span>
+                </a>
+            </div>
+            
+            <ul class="sidebar-links-list">
+                <li class="sidebar-link-item">
+                    <a href="{{ url_for('lectures') }}" class="sidebar-nav-link {% if request.path == '/lectures' %}active{% endif %}">
+                        <i class="fa-solid fa-graduation-cap"></i>
+                        <span data-i18n="nav_lectures">Лекциялар</span>
+                    </a>
+                </li>
+                <li class="sidebar-link-item">
+                    <a href="{{ url_for('videos') }}" class="sidebar-nav-link {% if request.path == '/videos' %}active{% endif %}">
+                        <i class="fa-solid fa-video"></i>
+                        <span data-i18n="nav_videos">Видео сабақтар</span>
+                    </a>
+                </li>
+                <li class="sidebar-link-item">
+                    <a href="{{ url_for('scenario') }}" class="sidebar-nav-link {% if request.path == '/scenario' %}active{% endif %}">
+                        <i class="fa-solid fa-comments"></i>
+                        <span data-i18n="nav_scenario">Кибержағдайаттар</span>
+                    </a>
+                </li>
+                <li class="sidebar-link-item">
+                    <a href="{{ url_for('feedback') }}" class="sidebar-nav-link {% if request.path == '/feedback' %}active{% endif %}">
+                        <i class="fa-solid fa-circle-exclamation"></i>
+                        <span data-i18n="nav_feedback">Шағымдану</span>
+                    </a>
+                </li>
+                <li class="sidebar-link-item">
+                    <a href="{{ url_for('ml_lab') }}" class="sidebar-nav-link {% if request.path == '/ml-lab' %}active{% endif %}">
+                        <i class="fa-solid fa-flask"></i>
+                        <span data-i18n="nav_mllab">ML Лаборатория</span>
+                    </a>
+                </li>
+            </ul>
+            
+            <div class="sidebar-footer">
+                <a href="{{ url_for('logout') }}" class="sidebar-logout-btn">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                    <span data-i18n="nav_logout">Шығу</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- RIGHT MAIN WINDOW -->
+        <div class="cyberguard-main-frame">
+            <!-- TOP HEADER BAR -->
+            <header class="cyberguard-top-header">
+                <div class="header-welcome-greeting">
+                    <h2 id="welcomeGreeting">
+                        <span data-i18n="dash_welcome_1">Қош келдіңіз,</span> {{ display_name }}
+                        <span class="shield-badge-icon"><i class="fa-solid fa-shield-halved"></i></span>
+                    </h2>
+                </div>
+                
+                <div class="header-action-pills">
+                    <!-- User Profile Pill (Clickable) -->
+                    <div class="header-profile-pill" id="profilePillBtn" onclick="toggleProfileDropdown(event)" style="cursor:pointer; position:relative;">
+                        <img src="https://api.dicebear.com/7.x/bottts/svg?seed={{ session.get('user') }}" alt="Avatar" class="avatar-img-circle" id="headerAvatarImg">
+                        <span class="user-display-text">{{ display_name }}</span>
+                        <i class="fa-solid fa-chevron-down" style="font-size:0.7rem; color:#667766; margin-left:2px;"></i>
+
+                        <!-- Profile Dropdown -->
+                        <div class="profile-dropdown" id="profileDropdown">
+                            <div class="profile-dropdown-header">
+                                <img src="https://api.dicebear.com/7.x/bottts/svg?seed={{ session.get('user') }}" alt="Avatar" class="profile-dropdown-avatar" id="dropdownAvatarImg">
+                                <div>
+                                    <div class="profile-dropdown-name">{{ display_name }}</div>
+                                    <div class="profile-dropdown-email">{{ session.get('user', '') }}</div>
+                                </div>
+                            </div>
+                            <div class="profile-dropdown-divider"></div>
+                            <button class="profile-dropdown-item" onclick="openProfileModal(); event.stopPropagation();">
+                                <i class="fa-solid fa-user-pen"></i>
+                                <span>Профиль / Пароль өзгерту</span>
+                            </button>
+                            <div class="profile-dropdown-divider"></div>
+                            <a href="{{ url_for('logout') }}" class="profile-dropdown-item profile-dropdown-logout" onclick="event.stopPropagation();">
+                                <i class="fa-solid fa-right-from-bracket"></i>
+                                <span>Жүйеден шығу</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Language Selector Pill -->
+                    <div class="header-lang-capsule" id="langToggle">
+                        <span class="lang-item active" id="langKKBtn">Қаз</span>
+                        <span class="lang-item" id="langRUBtn">Рус</span>
+                    </div>
+
+                    <!-- Theme Selector Pill -->
+                    <button class="header-theme-toggle-btn" id="themeToggle">
+                        <div class="theme-toggle-indicator">
+                            <i class="fa-solid fa-circle-half-stroke"></i>
+                        </div>
+                    </button>
+                </div>
+            </header>
+
+            <!-- ===== PROFILE MODAL ===== -->
+            <div class="cg-modal-overlay" id="profileModalOverlay" onclick="closeProfileModal(event)">
+                <div class="cg-modal-box" style="max-width: 480px;" onclick="event.stopPropagation()">
+                    <!-- Header -->
+                    <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #e0e6e0; padding-bottom:0.75rem; margin-bottom:1rem;">
+                        <h3 class="cg-modal-title" style="margin:0; font-size:1.2rem;">
+                            <i class="fa-solid fa-user-shield" style="color:#2e7d32;"></i> Менің профилім
+                        </h3>
+                        <button onclick="closeProfileModal()" style="background:none;border:none;font-size:1.2rem;cursor:pointer;color:#888;"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+
+                    <!-- Avatar Section -->
+                    <div style="display:flex; flex-direction:column; align-items:center; gap:0.75rem; padding:1rem 0; border-bottom:1px solid #e0e6e0; margin-bottom:1rem;">
+                        <div style="position:relative; display:inline-block;">
+                            <img id="profileModalAvatar" src="https://api.dicebear.com/7.x/bottts/svg?seed={{ session.get('user') }}" alt="Avatar"
+                                style="width:90px; height:90px; border-radius:50%; object-fit:cover; border:3px solid #2e7d32; box-shadow:0 4px 16px rgba(46,125,50,0.2);">
+                            <label for="avatarFileInput" title="Суретті өзгерту"
+                                style="position:absolute; bottom:2px; right:2px; width:28px; height:28px; background:#2e7d32; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 2px 6px rgba(0,0,0,0.2);">
+                                <i class="fa-solid fa-camera" style="color:#fff; font-size:0.7rem;"></i>
+                            </label>
+                            <input type="file" id="avatarFileInput" accept="image/*" style="display:none;" onchange="handleAvatarChange(event)">
+                        </div>
+                        <div style="text-align:center;">
+                            <div style="font-weight:700; font-size:1rem; color:#1c281c;">{{ display_name }}</div>
+                            <div style="font-size:0.82rem; color:#667766;">{{ session.get('user', '') }}</div>
+                        </div>
+                        <button onclick="document.getElementById('avatarFileInput').click()" class="cg-btn-outline" style="font-size:0.82rem; padding:0.4rem 1.1rem; border-radius:50px;">
+                            <i class="fa-solid fa-image"></i> Аватарды өзгерту
+                        </button>
+                    </div>
+
+                    <!-- Password Change Section -->
+                    <div>
+                        <h4 style="color:#1c281c; font-size:0.95rem; font-weight:700; margin-bottom:1rem; display:flex; align-items:center; gap:0.5rem;">
+                            <i class="fa-solid fa-lock" style="color:#2e7d32;"></i> Құпия сөзді өзгерту
+                        </h4>
+                        <div style="display:flex; flex-direction:column; gap:0.75rem;">
+                            <div style="position:relative;">
+                                <input type="password" id="profileOldPass" placeholder="Ескі құпия сөз" autocomplete="current-password"
+                                    style="width:100%; padding:0.7rem 2.5rem 0.7rem 1rem; border:1px solid #e0e6e0; border-radius:10px; font-size:0.9rem; outline:none; background:#fff; color:#1c281c;">
+                                <button type="button" onclick="togglePasswordVisibility('profileOldPass', this)" tabindex="-1"
+                                    style="position:absolute;right:0.75rem;top:50%;transform:translateY(-50%);background:none;border:none;color:#667766;cursor:pointer;padding:0;">
+                                    <i class="fa-solid fa-eye-slash"></i>
+                                </button>
+                            </div>
+                            <div style="position:relative;">
+                                <input type="password" id="profileNewPass" placeholder="Жаңа құпия сөз (мин. 6 таңба)" autocomplete="new-password"
+                                    style="width:100%; padding:0.7rem 2.5rem 0.7rem 1rem; border:1px solid #e0e6e0; border-radius:10px; font-size:0.9rem; outline:none; background:#fff; color:#1c281c;">
+                                <button type="button" onclick="togglePasswordVisibility('profileNewPass', this)" tabindex="-1"
+                                    style="position:absolute;right:0.75rem;top:50%;transform:translateY(-50%);background:none;border:none;color:#667766;cursor:pointer;padding:0;">
+                                    <i class="fa-solid fa-eye-slash"></i>
+                                </button>
+                            </div>
+                            <div style="position:relative;">
+                                <input type="password" id="profileConfirmPass" placeholder="Жаңа құпия сөзді растау" autocomplete="new-password"
+                                    style="width:100%; padding:0.7rem 2.5rem 0.7rem 1rem; border:1px solid #e0e6e0; border-radius:10px; font-size:0.9rem; outline:none; background:#fff; color:#1c281c;">
+                                <button type="button" onclick="togglePasswordVisibility('profileConfirmPass', this)" tabindex="-1"
+                                    style="position:absolute;right:0.75rem;top:50%;transform:translateY(-50%);background:none;border:none;color:#667766;cursor:pointer;padding:0;">
+                                    <i class="fa-solid fa-eye-slash"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div style="display:flex; justify-content:flex-end; gap:0.75rem; margin-top:1.25rem;">
+                            <button class="cg-btn-outline" onclick="closeProfileModal()">Болдырмау</button>
+                            <button class="cg-btn-solid" id="changePassBtn" onclick="changePassword()">
+                                <i class="fa-solid fa-key"></i> Сақтау
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PAGES CONTENT CONTAINER -->
+            <main class="cyberguard-content-viewport">
+
+    {% else %}
+
+    <!-- GUEST LAYOUT: LANDING AND AUTHENTICATION PAGES -->
+    <nav class="navbar" id="navbar">
+        <div class="navbar-container">
+            <a href="{{ url_for('index') }}" class="navbar-logo">
+                <i class="fa-solid fa-shield-halved"></i>
+                Cyber<span>Guard</span>
+            </a>
+            
+            <div class="navbar-actions">
+                <!-- Theme Toggle Button -->
+                <button class="control-btn" id="themeToggle" title="Theme Toggle">
+                    <i class="fa-solid fa-moon" id="themeIcon"></i>
+                </button>
+
+                <!-- Language Selector Pill -->
+                <div class="header-lang-capsule" id="langToggle">
+                    <span class="lang-item active" id="langKKBtn">Қаз</span>
+                    <span class="lang-item" id="langRUBtn">Рус</span>
+                </div>
+
+                <a href="{{ url_for('login') }}" class="nav-btn nav-btn-outline {% if request.path == '/login' %}active{% endif %}" data-i18n="nav_login">Кіру</a>
+                <a href="{{ url_for('register') }}" class="nav-btn nav-btn-primary {% if request.path == '/register' %}active{% endif %}" data-i18n="nav_register">Тіркелу</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- MAIN BODY CONTENT -->
+    {% endif %}
+
+    <!-- BLOCK CONTENT DEFINED EXACTLY ONCE -->
+    {% block content %}
+    {% endblock %}
+
+    {% if session.get('user') %}
+            </main>
+        </div>
+    </div>
+    {% else %}
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-info">
+                <a href="{{ url_for('index') }}" class="navbar-logo">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    Cyber<span>Guard</span>
+                </a>
+                <p class="footer-desc" data-i18n="footer_desc">
+                    CyberGuard - заманауи киберқауіпсіздік білім беру және ақпараттық платформасы. Біздің мақсатымыз - цифрлық әлемді қауіпсіз әрі білімді ету.
+                </p>
+            </div>
+            
+            <div class="footer-links">
+                <h4 class="footer-h4" data-i18n="footer_links_title">Пайдалы сілтемелер</h4>
+                <ul class="footer-list">
+                    <li><a href="{{ url_for('index') }}" class="footer-link" data-i18n="nav_home">Басты бет</a></li>
+                    <li><a href="{{ url_for('login') }}" class="footer-link" data-i18n="nav_login">Кіру</a></li>
+                    <li><a href="{{ url_for('register') }}" class="footer-link" data-i18n="nav_register">Тіркелу</a></li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p>&copy; 2026 CyberGuard. <span data-i18n="footer_rights">Барлық құқықтар қорғалған.</span></p>
+            <p data-i18n="footer_made_by">Жоба Flask және Firebase негізінде жасалған</p>
+        </div>
+    </footer>
+    {% endif %}
+
+    <!-- Firebase App & Auth Compat SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+
+    <!-- Centralized Firebase Configuration Pass-through -->
+    <script id="firebase-config" type="application/json">
+        {{ firebase_config_json | safe }}
+    </script>
+    <script>
+        const firebaseConfig = JSON.parse(document.getElementById('firebase-config').textContent);
+        const flaskSessionUser = "{{ session.get('user', '') }}";
+    </script>
+
+    <!-- Main JS Application Controller -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    
+    <!-- Render Flash messages if sent by Flask -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <script id="flask-flash-messages" type="application/json">
+                {{ messages | tojson | safe }}
+            </script>
+            <script>
+                document.addEventListener('DOMContentLoaded', () => {
+                    const messagesEl = document.getElementById('flask-flash-messages');
+                    if (messagesEl) {
+                        try {
+                            const messages = JSON.parse(messagesEl.textContent);
+                            messages.forEach(([category, message]) => {
+                                // Check if system categories match our toast styles (e.g. 'danger' -> 'danger')
+                                const toastType = category === "danger" ? "danger" : 
+                                                  category === "success" ? "success" : "warning";
+                                showToast(message, toastType);
+                            });
+                        } catch (e) {
+                            console.error("Error parsing flash messages:", e);
+                        }
+                    }
+                });
+            </script>
+        {% endif %}
+    {% endwith %}
+</body>
+</html>

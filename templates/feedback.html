@@ -1,0 +1,176 @@
+{% extends "base.html" %}
+
+{% block title %}CyberGuard - Шағымдар мен Кері Байланыс{% endblock %}
+
+{% block content %}
+<div style="background-color: #ffffff; border-radius: 16px; border: 1px solid #e0e6e0; padding: 2rem; box-shadow: 0 2px 12px rgba(0,0,0,0.02);">
+    <!-- Header -->
+    <div style="margin-bottom: 2rem; border-bottom: 1px solid #e0e6e0; padding-bottom: 1rem;">
+        <h2 style="color: #1c281c; font-weight: 800; font-size: 1.6rem; margin-top: 0; margin-bottom: 0.5rem;" data-i18n="nav_feedback">Шағымдар бөлімі</h2>
+        <p style="color: #2e7d32; font-weight: 600; font-size: 0.95rem; margin: 0;" data-i18n="feedback_subtitle">Білім беру порталын жақсарту бойынша өз шағымдарыңызды, ұсыныстарыңызды немесе пікірлеріңізді қалдырыңыз.</p>
+    </div>
+
+    <!-- Feedback Workspace -->
+    <div class="dashboard-grid" style="grid-template-columns: 2fr 1fr; gap: 2rem; display: grid;">
+        
+        <!-- Interactive Form -->
+        <main class="modules-list" style="display: flex; flex-direction: column;">
+            <div style="background-color: #ffffff; border: 1px solid #e0e6e0; border-radius: 12px; padding: 2rem; box-shadow: 0 2px 8px rgba(0,0,0,0.01);" id="feedbackFormCard">
+                <h3 style="color: #1c281c; margin-top: 0; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem; font-size: 1.25rem;">
+                    <i class="fa-solid fa-file-pen" style="color: #2e7d32;"></i>
+                    <span>Кері байланыс формасы</span>
+                </h3>
+
+                <form id="feedbackForm" onsubmit="submitFeedback(event)" style="display: flex; flex-direction: column; gap: 1.5rem;">
+                    
+                    <!-- Name -->
+                    <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                        <label style="color: #4f5f4f; font-size: 0.85rem; font-weight: 700;">Аты-жөніңіз:</label>
+                        <input type="text" id="feedbackName" required placeholder="Мысалы: Асан Үсенов" style="padding: 0.8rem 1rem; border-radius: 8px; border: 1px solid #e0e6e0; background: #ffffff; color: #1c281c; width: 100%; outline: none; font-size: 0.9rem;">
+                    </div>
+
+                    <!-- Subject / Reason -->
+                    <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                        <label style="color: #4f5f4f; font-size: 0.85rem; font-weight: 700;">Не үшін шағымданып жатсыз? (Себебі):</label>
+                        <input type="text" id="feedbackSubject" required placeholder="Мысалы: Лекция мазмұны бойынша, сайт қателігі..." style="padding: 0.8rem 1rem; border-radius: 8px; border: 1px solid #e0e6e0; background: #ffffff; color: #1c281c; width: 100%; outline: none; font-size: 0.9rem;">
+                    </div>
+
+                    <!-- Rating Selector -->
+                    <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                        <label style="color: #4f5f4f; font-size: 0.85rem; font-weight: 700;">Платформаны бағалаңыз:</label>
+                        <div style="display: flex; gap: 0.5rem; font-size: 1.6rem; color: #e0e6e0;">
+                            <i class="fa-solid fa-star rating-star" onclick="setRating(1)" style="cursor: pointer; transition: color 0.2s ease;"></i>
+                            <i class="fa-solid fa-star rating-star" onclick="setRating(2)" style="cursor: pointer; transition: color 0.2s ease;"></i>
+                            <i class="fa-solid fa-star rating-star" onclick="setRating(3)" style="cursor: pointer; transition: color 0.2s ease;"></i>
+                            <i class="fa-solid fa-star rating-star" onclick="setRating(4)" style="cursor: pointer; transition: color 0.2s ease;"></i>
+                            <i class="fa-solid fa-star rating-star" onclick="setRating(5)" style="cursor: pointer; transition: color 0.2s ease;"></i>
+                        </div>
+                        <input type="hidden" id="feedbackRating" value="5">
+                    </div>
+
+                    <!-- Message Body -->
+                    <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                        <label style="color: #4f5f4f; font-size: 0.85rem; font-weight: 700;">Хабарламаңыз немесе Шағымыңыз:</label>
+                        <textarea id="feedbackMessage" required rows="6" placeholder="Өз ойыңызды немесе кездескен қателікті толық сипаттап жазыңыз..." style="padding: 0.8rem 1rem; border-radius: 8px; border: 1px solid #e0e6e0; background: #ffffff; color: #1c281c; resize: none; font-family: inherit; font-size: 0.95rem; line-height: 1.5; outline: none;"></textarea>
+                    </div>
+
+                    <button type="submit" class="cg-btn-solid" style="padding: 0.85rem; justify-content: center; font-weight: 700; width: 100%; border-radius: 50px !important;">
+                        <i class="fa-solid fa-paper-plane" style="margin-right: 0.5rem;"></i>
+                        <span>Хабарламаны Жіберу</span>
+                    </button>
+                </form>
+            </div>
+
+            <!-- Success Card (hidden by default) -->
+            <div style="display: none; background-color: #ffffff; border: 1px solid #e0e6e0; border-radius: 12px; padding: 3rem 2rem; text-align: center; flex-direction: column; align-items: center; gap: 1rem; box-shadow: 0 2px 8px rgba(0,0,0,0.01);" id="feedbackSuccessCard">
+                <div style="font-size: 4rem; color: #2e7d32;"><i class="fa-solid fa-circle-check"></i></div>
+                <h3 style="color: #1c281c; font-size: 1.6rem; margin: 0;">Хабарлама сәтті қабылданды!</h3>
+                <p style="color: #4f5f4f; max-width: 450px; line-height: 1.6; font-size: 0.95rem; margin: 0 0 1.5rem 0;">
+                    Сіздің пікіріңіз біздің модераторларға жіберілді. Порталды жақсартуға қосқан үлесіңізге рахмет!
+                </p>
+                <button class="cg-btn-outline" onclick="resetFeedbackForm()" style="padding: 0.6rem 1.5rem; border-radius: 50px !important;">
+                    <span>Жаңа хабарлама жазу</span>
+                </button>
+            </div>
+        </main>
+
+        <!-- Sidebar Info -->
+        <aside style="display: flex; flex-direction: column; gap: 1.5rem;">
+            <div style="background-color: #ffffff; border: 1px solid #e0e6e0; border-radius: 12px; padding: 1.5rem; box-shadow: 0 2px 8px rgba(0,0,0,0.01);">
+                <h4 style="display: flex; align-items: center; gap: 0.5rem; color: #2e7d32; font-weight: 800; font-size: 1.1rem; margin-top: 0; margin-bottom: 1rem;"><i class="fa-solid fa-headset"></i> Көмек орталығы</h4>
+                <div style="font-size: 0.85rem; color: #4f5f4f; line-height: 1.6; display: flex; flex-direction: column; gap: 1rem;">
+                    <p>Сіздің шағымыңыз тікелей администратордың WhatsApp желісіне (87059600538) жіберіледі.</p>
+                    <div style="border-top: 1px solid #e0e6e0; padding-top: 1rem;">
+                        <strong>Жедел байланыс поштасы:</strong><br>
+                        <span style="color: #2e7d32; font-weight: 700;">zhomart05025@gmail.com</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+    </div>
+</div>
+
+<script>
+    let currentRating = 5;
+
+    // Interactive Star Rating selector
+    function setRating(rating) {
+        currentRating = rating;
+        document.getElementById('feedbackRating').value = rating;
+        
+        const stars = document.querySelectorAll('.rating-star');
+        stars.forEach((star, idx) => {
+            if (idx < rating) {
+                star.style.color = '#f59e0b'; // Gold color
+            } else {
+                star.style.color = '#e0e6e0';
+            }
+        });
+    }
+
+    // Initialize stars at full gold rating (5 stars)
+    document.addEventListener('DOMContentLoaded', () => {
+        setRating(5);
+    });
+
+    async function submitFeedback(e) {
+        e.preventDefault();
+        
+        const nameVal = document.getElementById('feedbackName').value.trim();
+        const subject = document.getElementById('feedbackSubject').value.trim();
+        const message = document.getElementById('feedbackMessage').value.trim();
+        const rating = parseInt(document.getElementById('feedbackRating').value, 10);
+
+        if (!nameVal || !subject || !message) {
+            showToast('Барлық өрістерді толтырыңыз.', 'warning');
+            return;
+        }
+
+        const loader = document.getElementById('loaderOverlay');
+        const loaderText = document.getElementById('loaderText');
+        if (loader && loaderText) {
+            loaderText.textContent = 'Хабарлама жіберілуде...';
+            loader.classList.add('active');
+        }
+
+        try {
+            const res = await fetch('/api/save-feedback', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    subject: subject, 
+                    message: message, 
+                    rating: rating,
+                    user_name: nameVal 
+                })
+            });
+            const data = await res.json();
+            
+            if (loader) loader.classList.remove('active');
+
+            if (data.success) {
+                showToast('Шағым сәтті жіберілді!', 'success');
+                document.getElementById('feedbackFormCard').style.display = 'none';
+                
+                const successCard = document.getElementById('feedbackSuccessCard');
+                if (successCard) successCard.style.display = 'flex';
+            } else {
+                showToast(data.message || 'Жіберу мүмкін болмады.', 'danger');
+            }
+        } catch (err) {
+            console.error(err);
+            if (loader) loader.classList.remove('active');
+            showToast('Желілік қателік орын алды.', 'danger');
+        }
+    }
+
+    function resetFeedbackForm() {
+        document.getElementById('feedbackSubject').value = '';
+        document.getElementById('feedbackMessage').value = '';
+        setRating(5);
+        
+        document.getElementById('feedbackSuccessCard').style.display = 'none';
+        document.getElementById('feedbackFormCard').style.display = 'block';
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,59 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+firebase-debug.log*
+firebase-debug.*.log*
+
+# Firebase cache
+.firebase/
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Dependency directories
+node_modules/
+
+# dotenv environment variables file
+.env
+
+# dataconnect generated files
+.dataconnect
+
+# Python
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+.eggs/
+dist/
+build/
+.Python
+
+# Sensitive credentials — DO NOT COMMIT
+online-said-firebase-adminsdk-fbsvc-de6c887da8.json
+*.json.key
+
+# Large training CSV files (too large for GitHub)
+malicious_phish.csv
+spam.csv
+
+# Trained ML models (regenerate on server or use Git LFS)
+models/*.pkl
+
+# Local data files (will be created fresh on server)
+# data/lectures.json
+# data/videos.json
+# data/quizzes.json
+# data/feedback.json
+
+# OS files
+.DS_Store
+Thumbs.db

@@ -1,0 +1,248 @@
+{% extends "base.html" %}
+
+{% block title %}CyberGuard - Машиналық Оқыту Зертханасы (ML Lab){% endblock %}
+
+{% block content %}
+<style>
+    .ml-tabs-container {
+        margin-bottom: 1.5rem;
+    }
+    .ml-tabs-header {
+        display: flex;
+        border-bottom: 1px solid #d0d6d0;
+        margin-bottom: -1px; /* Overlap border */
+    }
+    .ml-tab-button {
+        padding: 0.8rem 1.5rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-weight: 600;
+        color: #667766;
+        border: 1px solid transparent;
+        border-bottom: none;
+        border-radius: 8px 8px 0 0;
+        transition: all 0.2s ease;
+        background: transparent;
+        font-size: 0.95rem;
+    }
+    .ml-tab-button.active {
+        background-color: #e8f5e9;
+        color: #2e7d32;
+        border-color: #d0d6d0;
+        border-top: 3px solid #2e7d32;
+    }
+    .ml-tab-button:not(.active):hover {
+        background-color: #f4f6f4;
+    }
+    .ml-tab-content {
+        display: none;
+        background: #ffffff;
+        border: 1px solid #d0d6d0;
+        border-radius: 0 8px 8px 8px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+    }
+    .ml-tab-content.active {
+        display: block;
+    }
+    .ml-input-label {
+        color: #667766;
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+    .ml-btn-search {
+        background-color: #2e7d32;
+        color: white;
+        border: none;
+        padding: 0.6rem 1.5rem;
+        border-radius: 6px;
+        font-weight: 600;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: 0.2s;
+        font-size: 0.95rem;
+    }
+    .ml-btn-search:hover {
+        background-color: #1b5e20;
+    }
+
+    /* Terminal window */
+    .ml-terminal {
+        background: #f4f6f4;
+        border: 1px solid #d0d6d0;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+        margin-top: 1.5rem;
+    }
+    .ml-terminal-header {
+        background: #eaeeea;
+        padding: 0.6rem 1rem;
+        display: flex;
+        align-items: center;
+        border-bottom: 1px solid #d0d6d0;
+    }
+    .mac-dots { display: flex; gap: 8px; }
+    .mac-dot { width: 12px; height: 12px; border-radius: 50%; }
+    .mac-dot.red { background: #ff5f56; }
+    .mac-dot.yellow { background: #ffbd2e; }
+    .mac-dot.green { background: #27c93f; }
+    
+    .ml-terminal-title {
+        flex: 1;
+        text-align: center;
+        font-family: monospace;
+        font-size: 0.85rem;
+        color: #889988;
+        margin-left: -48px;
+    }
+    .ml-terminal-body {
+        padding: 1.5rem;
+        font-family: monospace;
+        font-size: 0.95rem;
+        color: #5b8db8;
+        line-height: 1.6;
+    }
+    .ml-terminal-verdict {
+        background: #fff8e1;
+        border: 1px solid #ffe082;
+        padding: 0.8rem 1rem;
+        border-radius: 6px;
+        color: #1c281c;
+        font-weight: bold;
+        margin-top: 1rem;
+    }
+</style>
+
+<div class="ml-tabs-container">
+    <div class="ml-tabs-header">
+        <button class="ml-tab-button" id="tab-btn-url" onclick="switchMlTab('url')">
+            <i class="fa-solid fa-link"></i> Сілтеме анализаторы
+        </button>
+        <button class="ml-tab-button active" id="tab-btn-spam" onclick="switchMlTab('spam')">
+            <i class="fa-solid fa-envelope"></i> Спам-фильтр
+        </button>
+    </div>
+
+    <!-- URL Analyzer Tab -->
+    <div class="ml-tab-content" id="tab-content-url">
+        <h3 style="color: #2e7d32; margin-top: 0; margin-bottom: 1.5rem; font-size: 1.1rem; display: flex; align-items: center; gap: 0.5rem;">
+            <i class="fa-solid fa-link"></i> URL Phishing Detector
+        </h3>
+        <label class="ml-input-label">Тексерілетін сілтеме (URL):</label>
+        <input type="text" id="mlUrlInput" placeholder="Мысалы: http://secure-login-kaspi.kz-support.com/auth" style="width: 100%; padding: 1rem; border-radius: 6px; border: 1px solid #d0d6d0; background: #fafafa; color: #333; font-family: inherit; font-size: 0.95rem; outline: none; margin-bottom: 1rem;">
+        
+        <button class="ml-btn-search" onclick="analyzeURL()">
+            <i class="fa-solid fa-magnifying-glass"></i> Талдау
+        </button>
+    </div>
+
+    <!-- Spam Filter Tab -->
+    <div class="ml-tab-content active" id="tab-content-spam">
+        <h3 style="color: #2e7d32; margin-top: 0; margin-bottom: 1.5rem; font-size: 1.1rem; display: flex; align-items: center; gap: 0.5rem;">
+            <i class="fa-solid fa-envelope-open-text"></i> Spam Email Detector
+        </h3>
+        <label class="ml-input-label">Күдікті хат мәтінін енгізіңіз:</label>
+        <textarea id="mlEmailInput" rows="4" placeholder="Мысалы: Құттықтаймыз! Сіз тегін 1 000 000 теңге ұтыс жеңіп алдыңыз..." style="width: 100%; padding: 1rem; border-radius: 6px; border: 1px solid #d0d6d0; background: #fafafa; color: #333; resize: vertical; font-family: inherit; font-size: 0.95rem; outline: none; margin-bottom: 1rem;"></textarea>
+        
+        <button class="ml-btn-search" onclick="analyzeEmail()">
+            <i class="fa-solid fa-magnifying-glass"></i> Талдау
+        </button>
+    </div>
+</div>
+
+<!-- Terminal Results Window -->
+<div class="ml-terminal" id="mlResultWindow" style="display:none;">
+    <div class="ml-terminal-header">
+        <div class="mac-dots">
+            <div class="mac-dot red"></div>
+            <div class="mac-dot yellow"></div>
+            <div class="mac-dot green"></div>
+        </div>
+        <div class="ml-terminal-title" id="mlTerminalTitle">ML Inference</div>
+    </div>
+    <div class="ml-terminal-body" id="mlTerminalBody">
+        <!-- Results injected here -->
+    </div>
+</div>
+
+<script>
+    function switchMlTab(tabName) {
+        document.getElementById('tab-btn-url').classList.remove('active');
+        document.getElementById('tab-btn-spam').classList.remove('active');
+        document.getElementById('tab-content-url').classList.remove('active');
+        document.getElementById('tab-content-spam').classList.remove('active');
+        
+        document.getElementById('tab-btn-' + tabName).classList.add('active');
+        document.getElementById('tab-content-' + tabName).classList.add('active');
+        
+        document.getElementById('mlResultWindow').style.display = 'none';
+    }
+
+    async function analyzeURL() {
+        const val = document.getElementById('mlUrlInput').value.trim();
+        if (!val) {
+            showToast('Талдау үшін алдымен сілтеме енгізіңіз.', 'warning');
+            return;
+        }
+        showTerminal('ML Inference — URL Analysis', 'Модель талдауда...');
+        try {
+            const res = await fetch('/api/ml/predict-phish', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({url: val}) });
+            const data = await res.json();
+            renderTerminalResult(data, 'Қауіпті фишинг белгілері анықталды.', 'Қауіпсіз. Фишинг белгілері жоқ.', 'Сілтеме фишингке ұқсас.', 'Қалыпты сілтеме.');
+        } catch (e) {
+            showTerminal('ML Inference — Error', 'Сервермен байланыс қатесі.', true);
+        }
+    }
+
+    async function analyzeEmail() {
+        const val = document.getElementById('mlEmailInput').value.trim();
+        if (!val) {
+            showToast('Талдау үшін хат мәтінін енгізіңіз.', 'warning');
+            return;
+        }
+        showTerminal('ML Inference — Spam Detection', 'Модель талдауда...');
+        try {
+            const res = await fetch('/api/ml/predict-spam', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({text: val}) });
+            const data = await res.json();
+            renderTerminalResult(data, 'Қаржылық триггерлер табылды (ақша, ұтыс, мұра).', 'Спам триггерлері табылған жоқ.', 'Мәтін спам/скам хабарламасына ұқсас.', 'Мәтін қалыпты.');
+        } catch (e) {
+            showTerminal('ML Inference — Error', 'Сервермен байланыс қатесі.', true);
+        }
+    }
+
+    function showTerminal(title, content, isError=false) {
+        document.getElementById('mlResultWindow').style.display = 'block';
+        document.getElementById('mlTerminalTitle').textContent = title;
+        document.getElementById('mlTerminalBody').innerHTML = `<div style="color:${isError?'#c62828':'#5b8db8'}">${content}</div>`;
+    }
+
+    function renderTerminalResult(data, badTriggers, goodTriggers, badModelMsg, goodModelMsg) {
+        if (!data.success) {
+            document.getElementById('mlTerminalBody').innerHTML = `<div style="color:#c62828;">Қателік: ${data.message}</div>`;
+            return;
+        }
+        
+        let score = data.score;
+        if (score > 100) score = 100;
+        if (score < 0) score = 0;
+        
+        let html = '';
+        if (score >= 40) {
+            html += `<div>${badTriggers}</div>`;
+            html += `<div style="margin-top:0.5rem; margin-bottom:1rem;">ML Моделі: ${badModelMsg}</div>`;
+            html += `<div class="ml-terminal-verdict" style="background:#fff8e1; border-color:#ffe082; color:#1c281c;">ИИ үкімі: Risk ${score}%</div>`;
+        } else {
+            html += `<div>${goodTriggers}</div>`;
+            html += `<div style="margin-top:0.5rem; margin-bottom:1rem;">ML Моделі: ${goodModelMsg}</div>`;
+            html += `<div class="ml-terminal-verdict" style="background:#e8f5e9; border-color:#c8e6c9; color:#2e7d32;">ИИ үкімі: Safe ${score}%</div>`;
+        }
+        document.getElementById('mlTerminalBody').innerHTML = html;
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,212 @@
+{% extends "base.html" %}
+
+{% block title %}CyberGuard - Лекциялар мен Тесттер{% endblock %}
+
+{% block content %}
+
+<!-- ===== ADD LECTURE MODAL (Admin only) ===== -->
+{% if is_admin %}
+<div class="cg-modal-overlay" id="addLectureModalOverlay" onclick="closeAddLectureModal(event)">
+    <div class="cg-modal-box" style="max-width: 600px;" onclick="event.stopPropagation()">
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(0,0,0,0.07); padding-bottom:0.75rem; margin-bottom:1.25rem;">
+            <h3 class="cg-modal-title" style="margin:0; font-size:1.2rem;">
+                <i class="fa-solid fa-plus-circle" style="color:#2e7d32;"></i> Жаңа лекция қосу
+            </h3>
+            <button onclick="closeAddLectureModal()" style="background:none;border:none;font-size:1.2rem;cursor:pointer;color:#888;"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:1rem;">
+            <div>
+                <label style="font-size:0.85rem; font-weight:700; color:#4f5f4f; margin-bottom:0.4rem; display:block;">Тақырып атауы *</label>
+                <input id="newLecTitleKK" type="text" placeholder="Мысалы: Фишинг шабуылдары" style="width:100%; padding:0.75rem 1rem; border:1px solid #e0e6e0; border-radius:10px; font-size:0.95rem; box-sizing:border-box; background:#fff; color:#1c281c;">
+            </div>
+            <div>
+                <label style="font-size:0.85rem; font-weight:700; color:#4f5f4f; margin-bottom:0.4rem; display:block;">Лекция мазмұны</label>
+                <textarea id="newLecBodyKK" rows="5" placeholder="Лекция мәтінін енгізіңіз..." style="width:100%; padding:0.75rem 1rem; border:1px solid #e0e6e0; border-radius:10px; font-size:0.95rem; resize:vertical; box-sizing:border-box; background:#fff; color:#1c281c;"></textarea>
+            </div>
+            <div style="display: flex; align-items: center; gap: 0.6rem; padding: 0.5rem; background: #f4ecff; border-radius: 8px; border: 1px solid #e8daff;">
+                <input type="checkbox" id="generateQuizWithAI" checked style="width: 18px; height: 18px; cursor: pointer; accent-color: #673ab7;">
+                <label for="generateQuizWithAI" style="margin: 0; font-weight: 600; color: #512da8; cursor: pointer; font-size: 0.9rem;">
+                    <i class="fa-solid fa-wand-magic-sparkles" style="margin-right: 0.3rem;"></i> 
+                    AI көмегімен автоматты түрде тест құрастыру (10 сұрақ)
+                </label>
+            </div>
+        </div>
+        <div style="display:flex; gap:1rem; margin-top:1.5rem; justify-content:flex-end;">
+            <button class="cg-btn-outline" onclick="closeAddLectureModal()">Болдырмау</button>
+            <button class="cg-btn-solid" id="saveLecBtn" onclick="adminSaveLecture()">
+                <i class="fa-solid fa-floppy-disk"></i> Сақтау
+            </button>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- ===== TOPIC READ MODAL ===== -->
+<div class="cg-modal-overlay" id="topicModalOverlay">
+    <div class="cg-modal-box">
+        <h3 class="cg-modal-title" id="topicModalTitle">Лекция</h3>
+        <div class="cg-modal-body-text" id="topicModalBody">
+            Лекция мәтіні жүктелуде...
+        </div>
+        <div class="cg-modal-actions">
+            <button class="cg-btn-solid" id="topicStartQuizBtn">
+                <i class="fa-solid fa-circle-play"></i>
+                <span>Тест тапсыру (+XP)</span>
+            </button>
+            <button class="cg-btn-outline" onclick="closeTopicModal()">Жабу</button>
+        </div>
+    </div>
+</div>
+
+<!-- ===== QUIZ MODAL ===== -->
+<div class="cg-modal-overlay" id="quizOverlay">
+    <div class="cg-modal-box" id="quizModal" style="max-width: 650px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(0,0,0,0.06); padding-bottom: 0.75rem;">
+            <h3 class="cg-modal-title" id="quizModuleTitle" style="font-size: 1.25rem !important;">Тест</h3>
+            <button onclick="closeQuiz()" style="background: none; border: none; font-size: 1.2rem; cursor: pointer; color: #888;">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 0.25rem;">
+            <div style="display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 700; color: #555;">
+                <span>Сұрақ: <span id="quizCurrentQ">1</span> / <span id="quizTotalQ">10</span></span>
+            </div>
+            <div style="height: 6px; background: #e0e6e0; border-radius: 99px; overflow: hidden;">
+                <div id="quizProgressFill" style="height: 100%; width: 20%; background: #2e7d32; transition: width 0.3s ease;"></div>
+            </div>
+        </div>
+        <div class="quiz-body" id="quizBody" style="display: flex; flex-direction: column; gap: 1.2rem;">
+            <div style="background-color: #e2ede2; border-radius: 12px; padding: 1rem 1.25rem; border: 1px solid #c8dcd8;">
+                <p id="quizQuestion" style="font-size: 1rem; font-weight: 700; color: #1c281c; margin: 0; line-height: 1.5;">Сұрақ жүктелуде...</p>
+            </div>
+            <div class="quiz-options" id="quizOptions" style="display: flex; flex-direction: column; gap: 0.75rem;"></div>
+        </div>
+        <div class="quiz-result" id="quizResult" style="display:none; flex-direction: column; align-items: center; text-align: center; gap: 1rem; padding: 1.5rem 0;">
+            <div id="quizResultIcon" style="font-size: 4rem;">🎉</div>
+            <h3 id="quizResultTitle" style="color: #1c281c; font-weight: 800; font-size: 1.5rem; margin: 0;">Тест аяқталды!</h3>
+            <div id="quizScoreDisplay" style="font-size: 1.8rem; font-weight: 800; color: #2e7d32;"></div>
+            <p id="quizResultDesc" style="color: #2e7d32; font-weight: 700; font-size: 1.1rem; margin: 0;"></p>
+            <div style="display:flex; gap: 1rem; margin-top: 1rem;">
+                <button class="cg-btn-outline" id="quizMistakesBtn" onclick="window.location.href='/mistakes'" style="display:none; color:#c62828; border-color:#c62828;">
+                    <i class="fa-solid fa-triangle-exclamation"></i> Қателермен жұмыс
+                </button>
+                <button class="cg-btn-solid" onclick="closeQuiz()">Жабу</button>
+            </div>
+        </div>
+        <div class="quiz-nav" id="quizNav" style="display: flex; justify-content: flex-end;">
+            <button class="cg-btn-solid" id="quizNextBtn" onclick="nextQuestion()" disabled>
+                <span data-i18n="quiz_next">Келесі</span>
+                <i class="fa-solid fa-arrow-right"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ===== MAIN CONTENT ===== -->
+<div>
+    <!-- Stats row -->
+    <div class="cg-stats-row" id="studentStatsRow">
+        <div class="cg-stat-card">
+            <div class="cg-stat-label">Ұпай (XP)</div>
+            <div class="cg-stat-number" id="statTotalScore">0</div>
+        </div>
+        <div class="cg-stat-card">
+            <div class="cg-stat-label">Тест тапсырған</div>
+            <div class="cg-stat-number" id="statCompleted">0</div>
+        </div>
+        <div class="cg-stat-card">
+            <div class="cg-stat-label">Деңгей</div>
+            <div class="cg-stat-number" id="statRank">1</div>
+        </div>
+    </div>
+
+    <!-- Lectures List -->
+    <div style="background-color: #ffffff; border-radius: 16px; border: 1px solid #e0e6e0; padding: 1.5rem 2rem; box-shadow: 0 2px 12px rgba(0,0,0,0.02);">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+            <h3 class="cg-section-title" style="margin:0; font-size:1.3rem;">Киберқауіпсіздік лекциялары</h3>
+            {% if is_admin %}
+            <div style="display:flex; gap: 0.75rem;">
+                <button class="cg-btn-outline" onclick="openAdminFeedbackModal()"
+                    style="font-size:0.9rem; padding:0.55rem 1.2rem; display:flex; align-items:center; gap:0.5rem; color: #d32f2f; border-color: #d32f2f;">
+                    <i class="fa-solid fa-envelope-open-text"></i> Шағымдар
+                </button>
+                <button class="cg-btn-solid" id="openAddLectureBtn" onclick="openAddLectureModal()"
+                    style="font-size:0.9rem; padding:0.55rem 1.2rem; display:flex; align-items:center; gap:0.5rem;">
+                    <i class="fa-solid fa-plus"></i> Лекция қосу
+                </button>
+            </div>
+
+            <!-- Admin Feedback Modal -->
+            <div class="cg-modal-overlay" id="adminFeedbackModalOverlay" onclick="closeAdminFeedbackModal(event)">
+                <div class="cg-modal-box" style="max-width: 700px; width: 90%; max-height: 85vh; display: flex; flex-direction: column;" onclick="event.stopPropagation()">
+                    <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(0,0,0,0.07); padding-bottom:0.75rem; margin-bottom:1.25rem;">
+                        <h3 class="cg-modal-title" style="margin:0; font-size:1.2rem;">
+                            <i class="fa-solid fa-envelope-open-text" style="color:#d32f2f;"></i> Түскен шағымдар мен пікірлер
+                        </h3>
+                        <button onclick="closeAdminFeedbackModal()" style="background:none;border:none;font-size:1.2rem;cursor:pointer;color:#888;"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+                    <div id="adminFeedbackList" style="flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 1rem; padding-right: 0.5rem;">
+                        <div style="text-align:center; padding:2rem; color:#667766;">
+                            <i class="fa-solid fa-spinner fa-spin" style="font-size:1.5rem;"></i>
+                            <p style="margin-top:0.75rem;">Жүктелуде...</p>
+                        </div>
+                    </div>
+                    <div style="display:flex; margin-top:1.5rem; justify-content:flex-end;">
+                        <button class="cg-btn-outline" onclick="closeAdminFeedbackModal()">Жабу</button>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Dynamic lecture cards injected here -->
+        <div class="cg-module-list" id="lectureList">
+            <div style="text-align:center; padding:2rem; color:#667766;">
+                <i class="fa-solid fa-spinner fa-spin" style="font-size:1.5rem;"></i>
+                <p style="margin-top:0.75rem;">Лекциялар жүктелуде...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Leaderboard -->
+    <section class="leaderboard-section" style="margin-top: 2.5rem; width: 100%; background: #fff; border: 1px solid #e0e6e0; border-radius: 16px; box-shadow: 0 2px 12px rgba(0,0,0,0.02); padding: 1.5rem 2rem;">
+        <div class="leaderboard-header-row" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+            <h3 class="info-h3" style="margin: 0; display: flex; align-items: center; gap: 0.75rem; color: #1c281c;">
+                <i class="fa-solid fa-trophy" style="color: #2e7d32;"></i>
+                <span data-i18n="leaderboard_title">Студенттер рейтингі мен белсенділігі</span>
+            </h3>
+            <div class="search-box" style="position: relative;">
+                <i class="fa-solid fa-magnifying-glass" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-secondary);"></i>
+                <input type="text" id="leaderboardSearch" data-i18n="leaderboard_search_placeholder"
+                    placeholder="Студенттерді іздеу..." oninput="filterLeaderboard()"
+                    style="padding: 0.6rem 1rem 0.6rem 2.5rem; border-radius: 10px; border: 1px solid #e0e6e0; background: #fff; color: #333; width: 280px; transition: border-color 0.3s ease;">
+            </div>
+        </div>
+        <div class="table-responsive" style="overflow-x: auto; background: #fff; border-radius: 12px; border: 1px solid #e0e6e0;">
+            <table class="leaderboard-table" style="width: 100%; border-collapse: collapse; text-align: left;">
+                <thead>
+                    <tr style="border-bottom: 1px solid #e0e6e0; background: #f9faf9;">
+                        <th style="padding: 1.2rem 1rem; color: #1b5e20;" data-i18n="leaderboard_rank">Орын</th>
+                        <th style="padding: 1.2rem 1rem; color: #1b5e20;" data-i18n="leaderboard_student">Студент</th>
+                        <th style="padding: 1.2rem 1rem; color: #1b5e20;" data-i18n="leaderboard_tests">Тапсырылған тесттер</th>
+                        <th style="padding: 1.2rem 1rem; color: #1b5e20;" data-i18n="leaderboard_total_score">Жалпы ұпай</th>
+                        <th style="padding: 1.2rem 1rem; color: #1b5e20;" data-i18n="leaderboard_avg_score">Орташа нәтиже</th>
+                    </tr>
+                </thead>
+                <tbody id="leaderboardBody">
+                    <tr>
+                        <td colspan="5" style="padding: 2.5rem; text-align: center; color: var(--text-secondary);" data-i18n="loading_text">Жүктелуде...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</div>
+
+<!-- Pass data to JS -->
+<script>
+    const currentUserUID   = "{{ user_uid }}";
+    const currentDisplayName = "{{ display_name }}";
+    const IS_ADMIN         = {{ 'true' if is_admin else 'false' }};
+</script>
+{% endblock %}

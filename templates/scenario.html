@@ -1,0 +1,206 @@
+{% extends "base.html" %}
+
+{% block title %}CyberGuard - Кибержаядаят тренажеры{% endblock %}
+
+{% block content %}
+<div style="background-color: #ffffff; border-radius: 16px; border: 1px solid #e0e6e0; padding: 2rem; box-shadow: 0 2px 12px rgba(0,0,0,0.02);">
+    <!-- Header -->
+    <div style="margin-bottom: 2rem; border-bottom: 1px solid #e0e6e0; padding-bottom: 1rem;">
+        <h2 style="color: #1c281c; font-weight: 800; font-size: 1.6rem; margin-top: 0; margin-bottom: 0.5rem;" data-i18n="nav_scenario">Кибержаядаят</h2>
+        <p style="color: #2e7d32; font-weight: 600; font-size: 0.95rem; margin: 0;" data-i18n="scenario_subtitle">Жасанды интеллект арқылы кибер-шабуылдарды тану және олардан қорғану тренажеры.</p>
+    </div>
+
+    <!-- Main Chat Workspace -->
+    <div class="dashboard-grid" style="grid-template-columns: 2.2fr 1fr; gap: 2rem; display: grid;">
+        <!-- Chat Console -->
+        <main class="modules-list" style="display: flex; flex-direction: column; gap: 1.5rem;">
+            <div style="background-color: #ffffff; border: 1px solid #e0e6e0; border-radius: 12px; padding: 1.5rem; display: flex; flex-direction: column; height: 600px; justify-content: space-between; box-shadow: 0 2px 8px rgba(0,0,0,0.01);">
+                <!-- Scenario Setup Header -->
+                <div class="scenario-setup-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e0e6e0; padding-bottom: 1rem; margin-bottom: 1rem; flex-wrap: wrap; gap: 1rem;">
+                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                        <span style="color: #4f5f4f; font-weight: 700; font-size: 0.9rem;">Деңгей:</span>
+                        <select id="scenarioLevel" style="background: #ffffff; border: 1px solid #e0e6e0; border-radius: 8px; color: #1c281c; padding: 0.4rem 1rem; font-weight: 600; cursor: pointer; font-size: 0.9rem; outline: none; transition: border-color 0.2s;">
+                            <option value="easy">Жеңіл (Easy)</option>
+                            <option value="medium">Орташа (Medium)</option>
+                            <option value="hard">Қиын (Hard)</option>
+                        </select>
+                    </div>
+                    <button class="cg-btn-solid" onclick="startNewScenario()" style="padding: 0.5rem 1.2rem; font-size: 0.9rem; border-radius: 8px !important;">
+                        <i class="fa-solid fa-play"></i>
+                        <span>Жаңа тренинг бастау</span>
+                    </button>
+                </div>
+
+                <!-- Chat Display Area -->
+                <div id="chatConsoleWindow" style="flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 1rem; padding: 1rem; margin-bottom: 1rem; background-color: #f4f6f4; border: 1px solid #e0e6e0; border-radius: 12px;">
+                    <!-- System Message -->
+                    <div class="chat-bubble system" style="background: #e2ede2; border: 1px dashed #2e7d32; padding: 1rem; border-radius: 12px; font-size: 0.9rem; line-height: 1.5; color: #1b5e20; display: flex; gap: 0.75rem; align-items: flex-start;">
+                        <i class="fa-solid fa-circle-info" style="margin-top: 0.2rem; font-size: 1.1rem;"></i>
+                        <div>
+                            <strong>Жаттықтырушы жүйе іске қосылды.</strong><br>
+                            Күрделілік деңгейін таңдап, "Жаңа тренинг бастау" батырмасын басыңыз. Жасанды интеллект сізге күдікті хабарлама жібереді. Сіздің міндетіңіз — қауіпті тауып, оған сәйкесінше жауап қайтару.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chat Input Section -->
+                <form id="scenarioChatForm" onsubmit="sendScenarioReply(event)" style="display: flex; gap: 1rem; align-items: center; border-top: 1px solid #e0e6e0; padding-top: 1rem;">
+                    <input type="text" id="scenarioUserInput" placeholder="Хабарламаңызды осында жазыңыз..." autocomplete="off" disabled style="flex: 1; padding: 0.8rem 1.2rem; border-radius: 10px; border: 1px solid #e0e6e0; background: #ffffff; color: #1c281c; transition: border-color 0.3s ease; outline: none; font-size: 0.95rem;">
+                    <button type="submit" id="scenarioSendBtn" disabled class="cg-btn-solid" style="height: 45px; width: 45px; display: flex; align-items: center; justify-content: center; padding: 0; border-radius: 10px !important; min-width: 45px;">
+                        <i class="fa-solid fa-paper-plane"></i>
+                    </button>
+                </form>
+            </div>
+        </main>
+
+        <!-- Sidebar Activity Widget -->
+        <aside style="display: flex; flex-direction: column; gap: 1.5rem;">
+            <!-- Tips -->
+            <div style="background-color: #ffffff; border: 1px solid #e0e6e0; border-radius: 12px; padding: 1.5rem; box-shadow: 0 2px 8px rgba(0,0,0,0.01);">
+                <h4 style="display: flex; align-items: center; gap: 0.5rem; color: #2e7d32; font-weight: 800; font-size: 1.1rem; margin-top: 0; margin-bottom: 1rem;">
+                    <i class="fa-solid fa-graduation-cap"></i>
+                    <span>Тренер кеңестері</span>
+                </h4>
+                <div style="font-size: 0.85rem; color: #4f5f4f; line-height: 1.6; display: flex; flex-direction: column; gap: 0.75rem;">
+                    <div style="padding: 0.75rem; background: #f4f6f4; border: 1px solid #e0e6e0; border-radius: 8px;">
+                        <strong style="color: #2e7d32;">1. Жіберушіні тексеру:</strong> Хаттың ресми мекен-жайын және доменінің дұрыстығын тексеріңіз.
+                    </div>
+                    <div style="padding: 0.75rem; background: #f4f6f4; border: 1px solid #e0e6e0; border-radius: 8px;">
+                        <strong style="color: #2e7d32;">2. Шұғылдық факторы:</strong> Хакерлер жиі "жедел түрде", "қазір ашыңыз", "аккаунтыңыз бұғатталады" деп асықтырады.
+                    </div>
+                    <div style="padding: 0.75rem; background: #f4f6f4; border: 1px solid #e0e6e0; border-radius: 8px;">
+                        <strong style="color: #2e7d32;">3. Жеке мәліметтер:</strong> Сенімді ұйымдар, банктер ешқашан сіздің құпия сөзіңізді немесе SMS кодты сұрамайды.
+                    </div>
+                </div>
+            </div>
+        </aside>
+    </div>
+</div>
+
+<script>
+    let activeConversation = [];
+
+    async function startNewScenario() {
+        const level = document.getElementById('scenarioLevel').value;
+        const consoleWindow = document.getElementById('chatConsoleWindow');
+        const userInput = document.getElementById('scenarioUserInput');
+        const sendBtn = document.getElementById('scenarioSendBtn');
+
+        // Clear console and show loader
+        consoleWindow.innerHTML = `
+            <div class="chat-bubble system" style="background: #e2ede2; border: 1px dashed #2e7d32; padding: 1rem; border-radius: 12px; font-size: 0.9rem; color: #2e7d32;">
+                <i class="fa-solid fa-spinner fa-spin" style="margin-right: 0.5rem;"></i> Жаттықтырушы ЖИ сізге жаңа жаттығу құрастыруда, күте тұрыңыз...
+            </div>
+        `;
+
+        try {
+            const res = await fetch('/api/scenario-chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'new', level: level })
+            });
+            const data = await res.json();
+            
+            if (data.success) {
+                activeConversation = [{ role: 'assistant', content: data.message }];
+                
+                consoleWindow.innerHTML = `
+                    <div class="chat-bubble trainer" style="background: #ffffff; border: 1px solid #e0e6e0; padding: 1rem; border-radius: 12px; font-size: 0.95rem; color: #1c281c; line-height: 1.6; align-self: flex-start; max-width: 85%; box-shadow: 0 2px 6px rgba(0,0,0,0.01);">
+                        <div style="font-weight: 700; color: #2e7d32; margin-bottom: 0.4rem;"><i class="fa-solid fa-user-ninja"></i> Күдікті Хабарлама:</div>
+                        ${data.message.replace(/\n/g, '<br>')}
+                    </div>
+                `;
+                
+                userInput.disabled = false;
+                sendBtn.disabled = false;
+                userInput.value = '';
+                userInput.focus();
+            } else {
+                showToast('AI тренинг құру кезінде қате кетті.', 'danger');
+            }
+        } catch (e) {
+            console.error(e);
+            showToast('Желілік байланыс қатесі.', 'danger');
+        }
+    }
+
+    async function sendScenarioReply(e) {
+        e.preventDefault();
+        const userInput = document.getElementById('scenarioUserInput');
+        const consoleWindow = document.getElementById('chatConsoleWindow');
+        const sendBtn = document.getElementById('scenarioSendBtn');
+        const text = userInput.value.trim();
+
+        if (!text) return;
+
+        // Append User Message to Chat Console
+        const userBubble = document.createElement('div');
+        userBubble.className = 'chat-bubble user';
+        userBubble.style = 'background: #e8f5e9; border: 1px solid #c8e6c9; padding: 1rem; border-radius: 12px; font-size: 0.95rem; color: #1b5e20; line-height: 1.6; align-self: flex-end; max-width: 85%; margin-left: auto; box-shadow: 0 2px 6px rgba(0,0,0,0.01);';
+        userBubble.innerHTML = `
+            <div style="font-weight: 700; color: #2e7d32; margin-bottom: 0.4rem;"><i class="fa-solid fa-user"></i> Сіздің жауабыңыз:</div>
+            ${text}
+        `;
+        consoleWindow.appendChild(userBubble);
+        consoleWindow.scrollTop = consoleWindow.scrollHeight;
+
+        userInput.value = '';
+        userInput.disabled = true;
+        sendBtn.disabled = true;
+
+        // Add Typing Indicator
+        const typingBubble = document.createElement('div');
+        typingBubble.className = 'chat-bubble typing-indicator';
+        typingBubble.style = 'background: #f4f6f4; border: 1px solid #e0e6e0; padding: 0.8rem 1.2rem; border-radius: 12px; font-size: 0.9rem; color: #4f5f4f; align-self: flex-start;';
+        typingBubble.innerHTML = `<i class="fa-solid fa-spinner fa-spin" style="margin-right: 0.5rem;"></i> Жаттықтырушы сіздің жауабыңызды талдауда...`;
+        consoleWindow.appendChild(typingBubble);
+        consoleWindow.scrollTop = consoleWindow.scrollHeight;
+
+        try {
+            const level = document.getElementById('scenarioLevel').value;
+            const res = await fetch('/api/scenario-chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    action: 'reply',
+                    level: level,
+                    userMessage: text,
+                    conversation: activeConversation
+                })
+            });
+            const data = await res.json();
+            
+            typingBubble.remove();
+
+            if (data.success) {
+                activeConversation.push({ role: 'user', content: text });
+                activeConversation.push({ role: 'assistant', content: data.message });
+
+                const aiBubble = document.createElement('div');
+                aiBubble.className = 'chat-bubble trainer-feedback';
+                aiBubble.style = 'background: #ffffff; border: 1px solid #e0e6e0; padding: 1rem; border-radius: 12px; font-size: 0.95rem; color: #1c281c; line-height: 1.6; align-self: flex-start; max-width: 85%; box-shadow: 0 2px 6px rgba(0,0,0,0.01);';
+                aiBubble.innerHTML = `
+                    <div style="font-weight: 700; color: #2e7d32; margin-bottom: 0.4rem;"><i class="fa-solid fa-user-ninja"></i> Жаттықтырушы талдауы:</div>
+                    ${data.message.replace(/\n/g, '<br>')}
+                `;
+                consoleWindow.appendChild(aiBubble);
+                consoleWindow.scrollTop = consoleWindow.scrollHeight;
+
+                userInput.disabled = false;
+                sendBtn.disabled = false;
+                userInput.focus();
+            } else {
+                showToast('Жауап алу мүмкін болмады.', 'danger');
+                userInput.disabled = false;
+                sendBtn.disabled = false;
+            }
+        } catch (e) {
+            console.error(e);
+            typingBubble.remove();
+            showToast('Желілік қателік орын алды.', 'danger');
+            userInput.disabled = false;
+            sendBtn.disabled = false;
+        }
+    }
+</script>
+{% endblock %}

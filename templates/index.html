@@ -1,0 +1,282 @@
+{% extends "base.html" %}
+
+{% block title %}CyberShield - Басты бет / Главная страница{% endblock %}
+
+{% block content %}
+<!-- OVERRIDE DEFAULT STYLES TO MATCH STUDENT PAGE COLORS -->
+<style>
+    body, html {
+        background: #f9faf9 !important;
+        color: #1c281c !important;
+    }
+    .hero-section {
+        background: transparent;
+    }
+    .hero-title, .section-title {
+        color: #1c281c !important;
+    }
+    .hero-desc, .info-p, .section-subtitle {
+        color: #4f5f4f !important;
+    }
+    .hero-glow-blob {
+        display: none !important;
+    }
+    .navbar {
+        background: #ffffff !important;
+        border-bottom: 1px solid #e0e6e0 !important;
+    }
+    .navbar-logo, .navbar-logo span, .navbar-logo i {
+        color: #2e7d32 !important;
+        text-shadow: none !important;
+        filter: none !important;
+    }
+    .nav-btn-outline {
+        border: 1px solid #2e7d32 !important;
+        color: #2e7d32 !important;
+    }
+    .nav-btn-outline:hover {
+        background: #2e7d32 !important;
+        color: #ffffff !important;
+    }
+    .nav-btn-primary, .hero-btn.nav-btn-primary {
+        background: #2e7d32 !important;
+        color: #ffffff !important;
+        box-shadow: none !important;
+    }
+    .stat-card, .feature-card, .tip-item {
+        background: #ffffff !important;
+        border: 1px solid #e0e6e0 !important;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.02) !important;
+    }
+    .stat-card:hover, .feature-card:hover, .tip-item:hover {
+        border-color: #2e7d32 !important;
+        transform: translateY(-5px);
+    }
+    .stat-number, .card-icon {
+        color: #2e7d32 !important;
+        text-shadow: none !important;
+    }
+    .stat-title, .card-desc, .tip-p {
+        color: #4f5f4f !important;
+    }
+    .card-title, .tip-h4 {
+        color: #1c281c !important;
+    }
+    .section-title span, .info-img-container i {
+        color: #2e7d32 !important;
+        text-shadow: none !important;
+    }
+    .tip-number {
+        background: #2e7d32 !important;
+        color: #ffffff !important;
+    }
+    .hero-shield-center i {
+        color: #2e7d32 !important;
+        filter: drop-shadow(0 0 10px rgba(46,125,50,0.2)) !important;
+    }
+    .footer {
+        background: #ffffff !important;
+        border-top: 1px solid #e0e6e0 !important;
+        color: #4f5f4f !important;
+    }
+    .footer-desc, .footer-link {
+        color: #4f5f4f !important;
+    }
+    .footer-h4 {
+        color: #1c281c !important;
+    }
+    .footer-link:hover {
+        color: #2e7d32 !important;
+    }
+    .footer-bottom {
+        border-top: 1px solid #e0e6e0 !important;
+        color: #667766 !important;
+    }
+    .control-btn {
+        color: #4f5f4f !important;
+    }
+    .hero-badge {
+        background: #e8f5e9 !important;
+        color: #2e7d32 !important;
+        border: 1px solid #c8e6c9 !important;
+        box-shadow: none !important;
+    }
+    .hero-badge i {
+        color: #2e7d32 !important;
+    }
+</style>
+
+<!-- HERO SECTION -->
+<header class="hero-section">
+    <div class="hero-glow-blob" style="top: 10%; left: 5%;"></div>
+    <div class="hero-glow-blob" style="bottom: 10%; right: 5%; background: radial-gradient(circle, rgba(52, 211, 153, 0.06) 0%, transparent 70%);"></div>
+
+    <div class="hero-content">
+        <div class="hero-badge">
+            <i class="fa-solid fa-circle-nodes"></i>
+            <span data-i18n="hero_badge">САНДЫҚ ҚАУІПСІЗДІК ДӘУІРІ</span>
+        </div>
+        <h1 class="hero-title">
+            <span data-i18n="hero_title_1">Цифрлық әлеміңізді</span> <br>
+            <span data-i18n="hero_title_2">сенімді қорғаңыз</span>
+        </h1>
+        <p class="hero-desc" data-i18n="hero_desc">
+            CyberShield - бұл сізді киберқауіптерден қорғауға және қауіпсіз цифрлық мәдениетті қалыптастыруға арналған оқу порталы. Білім алыңыз, қорғаныңыз және қауіпсіз болыңыз.
+        </p>
+        <div class="hero-actions">
+            {% if session.get('user') %}
+                <a href="{{ url_for('student') }}" class="hero-btn nav-btn-primary" style="color: #fff;">
+                    <i class="fa-solid fa-table-columns"></i>
+                    <span data-i18n="hero_btn_dashboard">Жұмыс үстелі</span>
+                </a>
+            {% else %}
+                <a href="{{ url_for('register') }}" class="hero-btn nav-btn-primary" style="color: #fff;">
+                    <i class="fa-solid fa-user-plus"></i>
+                    <span data-i18n="hero_btn_start">Бастау</span>
+                </a>
+                <a href="{{ url_for('login') }}" class="hero-btn nav-btn-outline">
+                    <i class="fa-solid fa-right-to-bracket"></i>
+                    <span data-i18n="hero_btn_login">Кіру</span>
+                </a>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="hero-graphics">
+        <div class="hero-shield-container">
+            <div class="hero-shield-icon"></div>
+            <div class="hero-shield-center">
+                <i class="fa-solid fa-shield-halved"></i>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- STATISTICS SECTION -->
+<section class="stats-section">
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-number" data-count="99">0</div>
+            <div class="stat-title" data-i18n="stat_attacks_prevented">Шабуылдардан қорғау (%)</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number" data-count="1250">0</div>
+            <div class="stat-title" data-i18n="stat_active_students">Белсенді оқушылар</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number" data-count="15">0</div>
+            <div class="stat-title" data-i18n="stat_cyber_modules">Оқу модульдері</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number" data-count="24">0</div>
+            <div class="stat-title" data-i18n="stat_support_hours">Тәулік бойы қолдау (24/7)</div>
+        </div>
+    </div>
+</section>
+
+<!-- WHAT IS CYBERSECURITY SECTION -->
+<section class="section" id="about-cybersecurity">
+    <div class="info-grid">
+        <div class="info-img-container">
+            <i class="fa-solid fa-user-shield"></i>
+        </div>
+        <div class="info-text">
+            <h2 class="section-title"><span data-i18n="what_is_cyber_title_1">Киберқауіпсіздік</span> <span data-i18n="what_is_cyber_title_2">дегеніміз не?</span></h2>
+            <p class="info-p" data-i18n="what_is_cyber_p1">
+                Киберқауіпсіздік - бұл жүйелерді, желілерді және бағдарламаларды цифрлық шабуылдардан қорғау тәжірибесі. Бұл кибершабуылдар әдетте құпия ақпаратқа қол жеткізуге, оны өзгертуге немесе жоюға бағытталған.
+            </p>
+            <p class="info-p" data-i18n="what_is_cyber_p2">
+                Қазіргі қоғамда адамдарға қарағанда құрылғылар көбірек, ал шабуылдаушылар өте креативті болып келеді. Сондықтан, киберқауіпсіздік шараларын дұрыс іске асыру әрбір адам мен ұйым үшін өте маңызды.
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- WHAT IS CYBERATTACK SECTION -->
+<section class="section" id="about-cyberattacks">
+    <div class="info-grid reverse">
+        <div class="info-img-container">
+            <i class="fa-solid fa-mask"></i>
+        </div>
+        <div class="info-text">
+            <h2 class="section-title"><span data-i18n="what_is_attack_title_1">Кибершабуыл</span> <span data-i18n="what_is_attack_title_2">дегеніміз не?</span></h2>
+            <p class="info-p" data-i18n="what_is_attack_p1">
+                Кибершабуыл - бұл бір немесе бірнеше компьютерлерге немесе желілерге зиян келтіру мақсатында жасалған кез келген қасақана әрекет. Шабуылдар жүйелерді істен шығаруға, құпия сөздер мен несиелік карталарды ұрлауға бағытталады.
+            </p>
+            <p class="info-p" data-i18n="what_is_attack_p2">
+                Ең көп таралған кибершабуылдар түрлеріне **Фишинг** (жалған хаттар), **Зиянды бағдарламалар** (вирустар, трояндар) және **DDoS шабуылдары** (жүйені шамадан тыс жүктеу) жатады. Кибергигиена ережелерін білу осы қауіптердің алдын алады.
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- INFORMATION / CARDS SECTION -->
+<section class="section" id="cyber-threats">
+    <div class="section-header">
+        <h2 class="section-title"><span data-i18n="threats_title_1">Ең таралған</span> <span data-i18n="threats_title_2">Киберқауіптер</span></h2>
+        <p class="section-subtitle" data-i18n="threats_subtitle">Цифрлық кеңістікте жиі кездесетін қауіп-қатерлердің негізгі түрлері мен олардың зияны туралы ақпарат.</p>
+    </div>
+    
+    <div class="cards-grid">
+        <div class="feature-card">
+            <div class="card-icon"><i class="fa-solid fa-envelope-open-text"></i></div>
+            <h3 class="card-title" data-i18n="threat_phishing_title">Фишинг (Phishing)</h3>
+            <p class="card-desc" data-i18n="threat_phishing_desc">Сенімді ұйымдардың атынан келетін, қолданушының құпия сөздерін немесе банк деректерін ұрлауға бағытталған жалған электрондық хаттар мен хабарламалар.</p>
+        </div>
+        
+        <div class="feature-card">
+            <div class="card-icon"><i class="fa-solid fa-virus"></i></div>
+            <h3 class="card-title" data-i18n="threat_malware_title">Зиянды бағдарламалар</h3>
+            <p class="card-desc" data-i18n="threat_malware_desc">Компьютерді бұзу немесе оған зиян келтіру үшін жасалған вирустар, құрылғыны бұғаттайтын бопсалаушы бағдарламалар (Ransomware) және тыңшы бағдарламалар.</p>
+        </div>
+        
+        <div class="feature-card">
+            <div class="card-icon"><i class="fa-solid fa-server"></i></div>
+            <h3 class="card-title" data-i18n="threat_ddos_title">DDoS шабуылдары</h3>
+            <p class="card-desc" data-i18n="threat_ddos_desc">Серверге немесе желіге бір уақытта миллиондаған сұраныстар жіберу арқылы оның жұмысын толық тоқтатып, пайдаланушыларға қолжетімсіз ету.</p>
+        </div>
+    </div>
+</section>
+
+<!-- SECURITY TIPS SECTION -->
+<section class="section" id="security-tips" style="padding-bottom: 8rem;">
+    <div class="section-header">
+        <h2 class="section-title"><span data-i18n="tips_title_1">Қауіпсіздікті қамтамасыз ету</span> <span data-i18n="tips_title_2">кеңестері</span></h2>
+        <p class="section-subtitle" data-i18n="tips_subtitle">Күнделікті өмірде интернетті қауіпсіз пайдалану үшін осы қарапайым ережелерді орындаңыз.</p>
+    </div>
+    
+    <div class="tips-container">
+        <div class="tip-item">
+            <div class="tip-number">1</div>
+            <div class="tip-text">
+                <h4 class="tip-h4" data-i18n="tip1_title">Күрделі құпия сөздерді қолданыңыз</h4>
+                <p class="tip-p" data-i18n="tip1_desc">Әрбір аккаунт үшін бөлек, әріптерден, сандардан және арнайы таңбалардан тұратын күрделі құпия сөз орнатыңыз. Ешқашан бір құпия сөзді қайталамаңыз.</p>
+            </div>
+        </div>
+        
+        <div class="tip-item">
+            <div class="tip-number">2</div>
+            <div class="tip-text">
+                <h4 class="tip-h4" data-i18n="tip2_title">Екі факторлы аутентификацияны (2FA) қосыңыз</h4>
+                <p class="tip-p" data-i18n="tip2_desc">2FA аккаунтыңызға қосымша қауіпсіздік деңгейін қосады. Құпия сөзіңізді білсе де, шабуылдаушы телефоныңызға келген кодсыз жүйеге кіре алмайды.</p>
+            </div>
+        </div>
+        
+        <div class="tip-item">
+            <div class="tip-number">3</div>
+            <div class="tip-text">
+                <h4 class="tip-h4" data-i18n="tip3_title">Күмәнді сілтемелерге баспаңыз</h4>
+                <p class="tip-p" data-i18n="tip3_desc">Бейтаныс жіберушілерден келген электрондық хаттардағы немесе мессенджерлердегі күмәнді сілтемелерді ашпаңыз. Олар фишингтік сайттар болуы мүмкін.</p>
+            </div>
+        </div>
+        
+        <div class="tip-item">
+            <div class="tip-number">4</div>
+            <div class="tip-text">
+                <h4 class="tip-h4" data-i18n="tip4_title">Бағдарламалық жасақтаманы үнемі жаңартыңыз</h4>
+                <p class="tip-p" data-i18n="tip4_desc">Операциялық жүйені және қолданбаларды үнемі соңғы нұсқаға жаңартыңыз. Жаңартулар жүйедегі осалдықтар мен «тесіктерді» жауып, қорғанысты күшейтеді.</p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

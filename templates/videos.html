@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}CyberGuard - Киберқауіпсіздік видеосабақтары{% endblock %}
+
+{% block content %}
+
+<!-- ===== ADD VIDEO MODAL (Admin only) ===== -->
+{% if is_admin %}
+<div class="cg-modal-overlay" id="addVideoModalOverlay" onclick="closeAddVideoModal(event)">
+    <div class="cg-modal-box" style="max-width: 560px;" onclick="event.stopPropagation()">
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(0,0,0,0.07); padding-bottom:0.75rem; margin-bottom:1.25rem;">
+            <h3 class="cg-modal-title" style="margin:0; font-size:1.2rem;">
+                <i class="fa-solid fa-video" style="color:#2e7d32;"></i> Жаңа видео қосу
+            </h3>
+            <button onclick="closeAddVideoModal()" style="background:none;border:none;font-size:1.2rem;cursor:pointer;color:#888;"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:1rem;">
+            <div>
+                <label style="font-size:0.85rem; font-weight:700; color:#4f5f4f; margin-bottom:0.4rem; display:block;">Видео атауы *</label>
+                <input id="newVidTitle" type="text" placeholder="Мысалы: Интернет қауіпсіздігі" style="width:100%; padding:0.75rem 1rem; border:1px solid #e0e6e0; border-radius:10px; font-size:0.95rem; box-sizing:border-box; background:#fff; color:#1c281c;">
+            </div>
+            <div>
+                <label style="font-size:0.85rem; font-weight:700; color:#4f5f4f; margin-bottom:0.4rem; display:block;">Категориясы</label>
+                <input id="newVidCategory" type="text" placeholder="Мысалы: Веб қауіпсіздік" style="width:100%; padding:0.75rem 1rem; border:1px solid #e0e6e0; border-radius:10px; font-size:0.95rem; box-sizing:border-box; background:#fff; color:#1c281c;">
+            </div>
+            <div>
+                <label style="font-size:0.85rem; font-weight:700; color:#4f5f4f; margin-bottom:0.4rem; display:block;">YouTube сілтемесі *</label>
+                <input id="newVidUrl" type="url" placeholder="https://www.youtube.com/watch?v=..." style="width:100%; padding:0.75rem 1rem; border:1px solid #e0e6e0; border-radius:10px; font-size:0.95rem; box-sizing:border-box; background:#fff; color:#1c281c;">
+            </div>
+        </div>
+        <div style="display:flex; gap:1rem; margin-top:1.5rem; justify-content:flex-end;">
+            <button class="cg-btn-outline" onclick="closeAddVideoModal()">Болдырмау</button>
+            <button class="cg-btn-solid" id="saveVidBtn" onclick="adminSaveVideo()">
+                <i class="fa-solid fa-floppy-disk"></i> Сақтау
+            </button>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- ===== MAIN CONTENT ===== -->
+<div style="background-color: #ffffff; border-radius: 16px; border: 1px solid #e0e6e0; padding: 2rem; box-shadow: 0 2px 12px rgba(0,0,0,0.02);">
+
+    <!-- Header row -->
+    <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:1.75rem; gap:1rem; flex-wrap:wrap;">
+        <div>
+            <h2 style="color: #1c281c; font-weight: 800; font-size: 1.6rem; margin:0 0 0.35rem 0;">Киберқауіпсіздік видеосабақтары</h2>
+            <p style="color: #2e7d32; font-weight: 600; font-size: 0.95rem; margin:0;">Төмендегі сілтемелерге басып, пайдалы видеоларды көре аласыз</p>
+        </div>
+        {% if is_admin %}
+        <button class="cg-btn-solid" onclick="openAddVideoModal()"
+            style="font-size:0.9rem; padding:0.55rem 1.2rem; display:flex; align-items:center; gap:0.5rem; white-space:nowrap;">
+            <i class="fa-solid fa-plus"></i> Видео қосу
+        </button>
+        {% endif %}
+    </div>
+
+    <!-- Dynamic video list -->
+    <div id="videoListContainer" style="display: flex; flex-direction: column; gap: 2rem;">
+        <div style="text-align:center; padding:2rem; color:#667766;">
+            <i class="fa-solid fa-spinner fa-spin" style="font-size:1.5rem;"></i>
+            <p style="margin-top:0.75rem;">Видеолар жүктелуде...</p>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    const IS_ADMIN = {{ 'true' if is_admin else 'false' }};
+</script>
+{% endblock %}

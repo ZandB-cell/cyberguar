@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block title %}CyberShield - Тіркелу / Регистрация{% endblock %}
+
+{% block content %}
+<div class="auth-wrapper">
+    <div class="hero-glow-blob" style="top: 20%; left: 10%;"></div>
+    <div class="hero-glow-blob" style="bottom: 20%; right: 10%; background: radial-gradient(circle, rgba(52, 211, 153, 0.05) 0%, transparent 70%);"></div>
+
+    <div class="auth-card">
+        <div class="auth-header">
+            <h2 class="auth-title"><span data-i18n="register_title_1">Жаңа</span> <span data-i18n="register_title_2">Аккаунт</span></h2>
+            <p class="auth-subtitle" data-i18n="register_subtitle">Білім алуды бастау үшін киберқауіпсіздік порталына тіркеліңіз.</p>
+        </div>
+        
+        <form class="auth-form" id="registerForm" novalidate>
+            <!-- Name Input -->
+            <div class="form-group">
+                <label for="regName" class="form-label" data-i18n="form_name_label">Аты-жөніңіз</label>
+                <div class="input-container">
+                    <input type="text" id="regName" class="form-input" placeholder="Аты Жөні" required>
+                    <span class="input-icon"><i class="fa-solid fa-user"></i></span>
+                </div>
+            </div>
+            
+            <!-- Email Input -->
+            <div class="form-group">
+                <label for="regEmail" class="form-label" data-i18n="form_email_label">Электрондық пошта (Email)</label>
+                <div class="input-container">
+                    <input type="email" id="regEmail" class="form-input" placeholder="example@cybershield.kz" required>
+                    <span class="input-icon"><i class="fa-solid fa-envelope"></i></span>
+                </div>
+            </div>
+            
+            <!-- Password Input -->
+            <div class="form-group">
+                <label for="regPassword" class="form-label" data-i18n="form_password_label">Құпия сөз</label>
+                <div class="input-container">
+                    <input type="password" id="regPassword" class="form-input" placeholder="••••••••" required>
+                    <span class="input-icon"><i class="fa-solid fa-lock"></i></span>
+                    <span class="toggle-password" onclick="togglePasswordVisibility('regPassword', this)">
+                        <i class="fa-solid fa-eye-slash"></i>
+                    </span>
+                </div>
+            </div>
+            
+            <!-- Confirm Password Input -->
+            <div class="form-group">
+                <label for="regConfirmPassword" class="form-label" data-i18n="form_confirm_password_label">Құпия сөзді растау</label>
+                <div class="input-container">
+                    <input type="password" id="regConfirmPassword" class="form-input" placeholder="••••••••" required>
+                    <span class="input-icon"><i class="fa-solid fa-lock-open"></i></span>
+                    <span class="toggle-password" onclick="togglePasswordVisibility('regConfirmPassword', this)">
+                        <i class="fa-solid fa-eye-slash"></i>
+                    </span>
+                </div>
+            </div>
+            
+            <!-- Register Button -->
+            <div class="form-actions">
+                <button type="submit" class="auth-btn" id="btnRegister">
+                    <i class="fa-solid fa-user-plus"></i>
+                    <span data-i18n="register_btn">Тіркелу</span>
+                </button>
+            </div>
+        </form>
+        
+        <div class="auth-footer">
+            <span data-i18n="register_footer_text">Аккаунтыңыз бар ма?</span>
+            <a href="{{ url_for('login') }}" class="auth-footer-link" data-i18n="register_footer_link">Жүйеге кіру</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

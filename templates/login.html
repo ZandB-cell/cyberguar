@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}CyberShield - Жүйеге кіру / Авторизация{% endblock %}
+
+{% block content %}
+<div class="auth-wrapper">
+    <div class="hero-glow-blob" style="top: 20%; left: 10%;"></div>
+    <div class="hero-glow-blob" style="bottom: 20%; right: 10%; background: radial-gradient(circle, rgba(52, 211, 153, 0.05) 0%, transparent 70%);"></div>
+
+    <div class="auth-card">
+        <div class="auth-header">
+            <h2 class="auth-title"><span data-i18n="login_title_1">Жүйеге</span> <span data-i18n="login_title_2">Кіру</span></h2>
+            <p class="auth-subtitle" data-i18n="login_subtitle">Порталға кіріп, киберқауіпсіздік бойынша оқуыңызды жалғастырыңыз.</p>
+        </div>
+        
+        <form class="auth-form" id="loginForm" novalidate>
+            <!-- Email Input -->
+            <div class="form-group">
+                <label for="loginEmail" class="form-label" data-i18n="form_email_label">Электрондық пошта (Email)</label>
+                <div class="input-container">
+                    <input type="email" id="loginEmail" class="form-input" placeholder="example@cybershield.kz" required>
+                    <span class="input-icon"><i class="fa-solid fa-envelope"></i></span>
+                </div>
+            </div>
+            
+            <!-- Password Input -->
+            <div class="form-group">
+                <label for="loginPassword" class="form-label" data-i18n="form_password_label">Құпия сөз</label>
+                <div class="input-container">
+                    <input type="password" id="loginPassword" class="form-input" placeholder="••••••••" required>
+                    <span class="input-icon"><i class="fa-solid fa-lock"></i></span>
+                    <span class="toggle-password" onclick="togglePasswordVisibility('loginPassword', this)">
+                        <i class="fa-solid fa-eye-slash"></i>
+                    </span>
+                </div>
+            </div>
+            
+            <!-- Login Button -->
+            <div class="form-actions">
+                <button type="submit" class="auth-btn" id="btnLogin">
+                    <i class="fa-solid fa-right-to-bracket"></i>
+                    <span data-i18n="login_btn">Кіру</span>
+                </button>
+            </div>
+        </form>
+        
+        <div class="auth-footer">
+            <span data-i18n="login_footer_text">Жаңа пайдаланушысыз ба?</span>
+            <a href="{{ url_for('register') }}" class="auth-footer-link" data-i18n="login_footer_link">Тіркелу</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
