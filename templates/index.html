@@ -105,6 +105,82 @@
     [data-theme="light"] .hero-badge i {
         color: #2e7d32 !important;
     }
+
+    /* Dark Mode specific overrides for the landing page background image */
+    [data-theme="dark"] body {
+        background-image: url("/static/img/bg.png") !important;
+        background-size: cover !important;
+        background-position: center top !important;
+        background-repeat: no-repeat !important;
+        background-attachment: fixed !important;
+    }
+
+    /* Mobile Responsive Overrides to prevent overlap and optimize background */
+    @media (max-width: 768px) {
+        .hero-section {
+            grid-template-columns: 1fr !important;
+            padding: 6.5rem 1.25rem 3rem 1.25rem !important;
+            gap: 2rem !important;
+            text-align: center !important;
+        }
+        .hero-content {
+            align-items: center !important;
+            gap: 1.2rem !important;
+        }
+        .hero-badge {
+            align-self: center !important;
+        }
+        .hero-title {
+            font-size: 2.2rem !important;
+            line-height: 1.2 !important;
+        }
+        .hero-desc {
+            font-size: 0.95rem !important;
+        }
+        .hero-actions {
+            flex-direction: column !important;
+            width: 100% !important;
+            gap: 0.75rem !important;
+        }
+        .hero-actions a {
+            width: 100% !important;
+            justify-content: center !important;
+        }
+        .hero-shield-container {
+            width: 250px !important;
+            height: 250px !important;
+            margin: 0 auto !important;
+        }
+        .hero-shield-icon {
+            width: 150px !important;
+            height: 150px !important;
+        }
+        .hero-shield-center {
+            font-size: 3.5rem !important;
+        }
+        [data-theme="dark"] body {
+            background-position: 65% top !important; /* Shift slightly on mobile to center the glowing shield background */
+        }
+        .stats-grid {
+            grid-template-columns: 1fr 1fr !important; /* 2x2 grid for stats on mobile */
+            gap: 1rem !important;
+        }
+        .info-grid {
+            grid-template-columns: 1fr !important;
+            gap: 2rem !important;
+            text-align: center !important;
+        }
+        .info-img-container {
+            height: 220px !important;
+            font-size: 4.5rem !important;
+        }
+        .info-h3 {
+            font-size: 1.4rem !important;
+        }
+        .info-p {
+            font-size: 0.95rem !important;
+        }
+    }
 </style>
 
 <!-- HERO SECTION -->
