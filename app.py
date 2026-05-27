@@ -5,6 +5,10 @@ import requests
 import time
 import joblib
 from firebase_config import FIREBASE_CONFIG
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 from openai import OpenAI
 
@@ -12,7 +16,7 @@ from openai import OpenAI
 ADMIN_EMAIL = "zhom05025@gmail.com"
 
 # OpenAI API key used for all AI operations in the scenario section and quiz generation.
-OPENAI_API_KEY = "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"
+OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY", "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")
 
 app = Flask(__name__)
 
@@ -622,16 +626,32 @@ def get_spam_model():
     global spam_model
     if spam_model is None:
         model_path = os.path.join(MODELS_DIR, 'spam_pipeline.pkl')
+        print(f"[ML INFO] Loading spam model from: {model_path}")
+        print(f"[ML INFO] Spam model file exists: {os.path.exists(model_path)}")
         if os.path.exists(model_path):
-            spam_model = joblib.load(model_path)
+            try:
+                spam_model = joblib.load(model_path)
+                print("[ML SUCCESS] Spam model loaded successfully!")
+            except Exception as e:
+                print(f"[ML ERROR] Failed to load spam model: {e}")
+        else:
+            print("[ML WARNING] Spam model file not found on server!")
     return spam_model
 
 def get_phish_model():
     global phish_model
     if phish_model is None:
         model_path = os.path.join(MODELS_DIR, 'phish_pipeline.pkl')
+        print(f"[ML INFO] Loading phishing model from: {model_path}")
+        print(f"[ML INFO] Phishing model file exists: {os.path.exists(model_path)}")
         if os.path.exists(model_path):
-            phish_model = joblib.load(model_path)
+            try:
+                phish_model = joblib.load(model_path)
+                print("[ML SUCCESS] Phishing model loaded successfully!")
+            except Exception as e:
+                print(f"[ML ERROR] Failed to load phishing model: {e}")
+        else:
+            print("[ML WARNING] Phishing model file not found on server!")
     return phish_model
 
 @app.route('/api/ml/predict-spam', methods=['POST'])
