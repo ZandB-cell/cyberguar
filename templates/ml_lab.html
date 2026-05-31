@@ -236,11 +236,11 @@
         if (score >= 40) {
             html += `<div>${badTriggers}</div>`;
             html += `<div style="margin-top:0.5rem; margin-bottom:1rem;">ML Моделі: ${badModelMsg}</div>`;
-            html += `<div class="ml-terminal-verdict" style="background:#fff8e1; border-color:#ffe082; color:#1c281c;">ИИ үкімі: Risk ${score}%</div>`;
+            html += `<div class="ml-terminal-verdict" style="background:#fff8e1; border-color:#ffe082; color:#1c281c;">Қорытынды: Қауіпті (${score}%)</div>`;
         } else {
             html += `<div>${goodTriggers}</div>`;
             html += `<div style="margin-top:0.5rem; margin-bottom:1rem;">ML Моделі: ${goodModelMsg}</div>`;
-            html += `<div class="ml-terminal-verdict" style="background:#e8f5e9; border-color:#c8e6c9; color:#2e7d32;">ИИ үкімі: Safe ${score}%</div>`;
+            html += `<div class="ml-terminal-verdict" style="background:#e8f5e9; border-color:#c8e6c9; color:#2e7d32;">Қорытынды: Қауіпсіз (${score}%)</div>`;
         }
         document.getElementById('mlTerminalBody').innerHTML = html;
     }
