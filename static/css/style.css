@@ -4,7 +4,7 @@
    Features: Glassmorphism, Responsive Grid, Theme Toggle, Micro-animations
 */
 
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Montserrat:wght@400;500;600;700;800;900&display=swap');
 
 /* --- THEME VARIABLES --- */
 :root {
@@ -56,7 +56,7 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Outfit', sans-serif;
+    font-family: 'Inter', sans-serif;
 }
 
 html {
@@ -74,7 +74,7 @@ body {
 }
 
 h1, h2, h3, h4, h5, h6 {
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: 'Montserrat', sans-serif;
     font-weight: 700;
     letter-spacing: -0.02em;
 }
@@ -130,7 +130,7 @@ a {
     font-size: 1.5rem;
     font-weight: 800;
     color: var(--text-primary);
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: 'Montserrat', sans-serif;
     text-shadow: var(--text-glow);
 }
 
@@ -439,7 +439,7 @@ a {
     font-size: 2.8rem;
     font-weight: 800;
     color: var(--color-primary);
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: 'Montserrat', sans-serif;
     margin-bottom: 0.5rem;
     text-shadow: var(--text-glow);
 }
@@ -688,7 +688,7 @@ a {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: 'Montserrat', sans-serif;
     box-shadow: var(--text-glow);
 }
 
@@ -1792,7 +1792,7 @@ a {
 }
 
 .loader-text {
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: 'Montserrat', sans-serif;
     color: var(--color-primary);
     font-size: 1.2rem;
     font-weight: 600;
@@ -2093,7 +2093,7 @@ a {
     font-size: 1.8rem;
     font-weight: 800;
     color: var(--text-primary);
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: 'Montserrat', sans-serif;
     line-height: 1.1;
 }
 
@@ -2402,7 +2402,7 @@ a {
 .quiz-score-display {
     font-size: 3.5rem;
     font-weight: 800;
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: 'Montserrat', sans-serif;
     color: var(--color-primary);
     text-shadow: var(--text-glow);
 }
@@ -2514,7 +2514,7 @@ a {
 
 .leaderboard-rank-cell {
     font-weight: 800;
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: 'Montserrat', sans-serif;
     font-size: 1.1rem;
     width: 80px;
 }
@@ -2587,13 +2587,13 @@ a {
 
 .leaderboard-total-score-val {
     font-weight: 700;
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: 'Montserrat', sans-serif;
     color: var(--text-primary);
 }
 
 .leaderboard-avg-pct {
     font-weight: 800;
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: 'Montserrat', sans-serif;
     color: var(--color-primary);
     text-shadow: var(--text-glow);
 }
@@ -2648,7 +2648,7 @@ a {
     font-weight: 800;
     color: #1b5e20 !important; /* Forest Green */
     text-decoration: none;
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: 'Montserrat', sans-serif;
 }
 
 .sidebar-logo a span {
@@ -2885,7 +2885,7 @@ a {
     font-size: 2.2rem;
     font-weight: 800;
     color: #2e7d32;
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: 'Montserrat', sans-serif;
 }
 
 /* Custom Module List and Headers */
@@ -3594,4 +3594,16 @@ a {
 
 [data-theme="dark"] #profileModalOverlay input[type="password"]::placeholder {
     color: #5a8a6a;
+}
+
+
+/* ==========================================================================
+   CUSTOM PADDING FIXES FOR INPUT ICONS & OVERLAPPING TEXT (LOGIN / REGISTER)
+   ========================================================================== */
+.input-container .form-input {
+    padding-left: 2.8rem !important;
+}
+
+.input-container .form-input[type="password"] {
+    padding-right: 2.8rem !important;
 }
